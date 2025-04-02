@@ -86,6 +86,29 @@ private:
         }
         return sorted; // Return new sorted head
     }
+
+////////////////////////////////////
+
+public:
+    /* Linear Search Implementation
+    - Time Complexity: O(n)
+    - Space Complexity: O(1)
+    - traverse through the entire list from start to end
+    */
+
+    Node* linearSearch(int target) {
+        Node* current = head;
+        // Loop until the end of the list
+        while (current) {
+            // If the target is found, return the node
+            if (current->data == target) {
+                return current;
+            }
+            // Move to the next node
+            current = current->next;
+        }
+        return nullptr; // Target not found
+    }
 };
 
 // Main function
@@ -107,5 +130,18 @@ int main() {
     cout << "Sorted list: ";
     list.display(); // Display sorted list
 
+    /////////////////////////////////////
+
+    // Perform Linear Search for a value, e.g., 13
+    int target = 13;
+    Node* result = list.linearSearch(target);  // Call the linearSearch function
+
+    if (result != nullptr) {
+        cout << "Found " << target << " in the list." << endl;
+    } else {
+        cout << target << " not found in the list." << endl;
+    }
+
     return 0;
 }
+
