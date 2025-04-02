@@ -137,9 +137,34 @@ private:
         return merge(left, right);
     }
 
+public:  
+    /* Sequential Search Implementation
+    - Time Complexity: O(1) [Best Case], O(n) [Average & Worst Case]
+    - Space Complexity: O(1)
+    - traverses node-by-node BUT stops early if greater than target, as assumes list is sorted
+    */
+   Node* sequentialSearch(int target)
+   {
+       Node* current = head;
+   
+       while (current != nullptr)
+       {
+           // If target found, return
+           if (current->data == target)
+           {
+               return current;
+           }
+           // If current node > target, stop search as its sorted
+           else if (current->data > target)
+           {
+               return nullptr;
+           }
+           current = current->next;
+       }
+   
+       return nullptr; // Target not found...
+   }
 
-    void sort_lm(int);
-    void search_lm(int);
     void sort_ck(int);
     void search_ck(int);
     void sort_xw(int);
@@ -148,15 +173,6 @@ private:
     void search_dn(int);
 };
 
-void LinkedList::sort_lm(int a)
-{
-    // Implementation
-}
-
-void LinkedList::search_lm(int a)
-{
-    // Implementation
-}
 
 void LinkedList::sort_ck(int a)
 {
@@ -217,6 +233,17 @@ int main()
 
     l.mergeSort();
     l.display();
+
+    Node* result = l.sequentialSearch(13);
+    if (result != nullptr)
+    {
+        cout << "Found: " << result->data << endl;
+    }
+    else
+    {
+        cout << "Not found!" << endl;
+    }
+    
     //LM
     // #1
     // #2
