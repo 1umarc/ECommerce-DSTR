@@ -69,10 +69,24 @@ void LinkedList::search_dn(int a)
 
 int main()
 {
+    //LM
     // #1
-
     // #2
+    // #3
 
+    //CK
+    // #1
+    // #2
+    // #3
+
+    //XW
+    // #1
+    // #2
+    // #3
+
+    //DN
+    // #1
+    // #2
     // #3
     
     return 0;
