@@ -7,16 +7,16 @@ int binarysearch(int ar[], int num, int first, int last) {
     while (first <= last) {
         int mid = first + (last - first) / 2;
         if (num == ar[mid]) {
-            return mid;
+            return mid; // num is at the middle of array
         }
         else if (num > ar[mid]) {
-            first = mid + 1;
+            first = mid + 1; // num is at the right side of mid
         }
         else {
-            last = mid - 1;
+            last = mid - 1; // num is at the left side of mid
         }
     }
-    return -1;
+    return -1; // num is not found in array
 }
 
 int main() {
@@ -28,6 +28,6 @@ int main() {
         cout << num << " is not found is array.";
     }
     else {
-        cout << num << " is location at index " << found;
+        cout << num << " is located at index " << found;
     }
 }
