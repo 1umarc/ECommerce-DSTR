@@ -1,3 +1,4 @@
+#include "algorithms.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -10,7 +11,6 @@ struct Node
     int data;
     Node* next; // Pointer to the next node's memory address
 };
-
 
 // Linked List class
 class LinkedList
@@ -61,169 +61,31 @@ public:
         cout << "NULL" << endl;
     }
 
-
-    /* Merge Sort Implementation
-    - Time Complexity: O(n log n)
-    - Space Complexity: O(n)
-    - divide & conquer algorithm, same if linear or linked list
-    */
-    // Merges two sorted Lists - O(n)
-    Node* merge(Node *left, Node *right)
+    void read()
     {
-        // At Base - If either list is empty, return the other
-        if(left == nullptr)
-        {
-            return right;
-        }
-        else if (right == nullptr)
-        {
-            return left;
-        }
-
-        // During Recursive - Compare data, smaller node attaches to the bigger node
-        if(left->data < right->data)
-        {
-            left->next = merge(left->next, right);
-            return left;
-        }
-        else
-        {
-            right->next = merge(left, right->next);
-            return right;
-        }
+        // ifstream file("transactions.csv");
+        // .
+        // string line;
+        // while (getline(file, line)) 
+        // {
+        //     stringstream ss(line);
+        //     int value;
+        //     if (ss >> value)
+        //     {
+        //         transactions.insert(value);
+        //     }
+        // }
+        // file.close();
     }
 
-    // Finds middle of the List with the slow-fast pointer approach - O(n)
-    Node* midSplit(Node *head)
+    void clean()
     {
-        Node* slow = head;
-        Node* fast = head->next;
 
-        // Slow pointer moves 1 step, fast pointer moves 2 steps
-        while(fast != nullptr && fast->next != nullptr)
-        {
-            slow = slow->next;
-            fast = fast->next->next;
-        }
-        return slow; // When fast pointer at the end, slow pointer is at mid-point
     }
-
-    // Function call for Merge Sort
-    void mergeSort()
-    {
-        head = mergeSort(head);
-    }
-
-
-private:
-    // Overload function to Sort the List - O(n log n)
-    Node* mergeSort(Node *head)
-    {
-        // At Base - If head or next to head is null, return
-        if(head == nullptr || head->next == nullptr)
-        {
-            return head;
-        }
-
-        // During Recursive - Split the list, recursively sort both halves and merge  
-        Node* mid = midSplit(head);
-        Node* left = head;
-        Node* right = mid->next; // mid-point belongs to left, mid->next is the second half
-        mid->next = nullptr;
-    
-        left = mergeSort(left);
-        right = mergeSort(right);
-    
-        return merge(left, right);
-    }
-
-public:  
-    /* Sequential Search Implementation
-    - Time Complexity: O(1) [Best Case], O(n) [Average & Worst Case]
-    - Space Complexity: O(1)
-    - traverses node-by-node BUT stops early if greater than target, as assumes list is sorted
-    */
-   Node* sequentialSearch(int target)
-   {
-       Node* current = head;
-   
-       while (current != nullptr)
-       {
-           // If target found, return
-           if (current->data == target)
-           {
-               return current;
-           }
-           // If current node > target, stop search as its sorted
-           else if (current->data > target)
-           {
-               return nullptr;
-           }
-           current = current->next;
-       }
-   
-       return nullptr; // Target not found...
-   }
-
-    void sort_ck(int);
-    void search_ck(int);
-    void sort_xw(int);
-    void search_xw(int);
-    void sort_dn(int);
-    void search_dn(int);
 };
-
-
-void LinkedList::sort_ck(int a)
-{
-    // Implementation
-}
-
-void LinkedList::search_ck(int a)
-{
-    // Implementation
-}
-
-void LinkedList::sort_xw(int a)
-{
-    // Implementation
-}
-
-void LinkedList::search_xw(int a)
-{
-    // Implementation
-}
-
-void LinkedList::sort_dn(int a)
-{
-    // Implementation
-}
-
-void LinkedList::search_dn(int a)
-{
-    // Implementation
-}
-
 
 int main()
 {
-    // LinkedList transactions;
-    // ifstream file("transactions.csv");
-    // .
-    // string line;
-    // while (getline(file, line)) 
-    // {
-    //     stringstream ss(line);
-    //     int value;
-    //     if (ss >> value)
-    //     {
-    //         transactions.insert(value);
-    //     }
-    // }
-    // file.close();
-    
-    // transactions.display();
-
     LinkedList l;
     l.insert(10);
     l.insert(14);
@@ -231,38 +93,17 @@ int main()
     l.insert(12);
     l.display();
 
-    l.mergeSort();
-    l.display();
+    //1
 
-    Node* result = l.sequentialSearch(13);
-    if (result != nullptr)
-    {
-        cout << "Found: " << result->data << endl;
-    }
-    else
-    {
-        cout << "Not found!" << endl;
-    }
-    
-    //LM
-    // #1
-    // #2
-    // #3
+    // use all sort algorithm
 
-    //CK
-    // #1
-    // #2
-    // #3
+    //2
+ 
+    // use all of search algorithm
 
-    //XW
-    // #1
-    // #2
-    // #3
+    //3
 
-    //DN
-    // #1
-    // #2
-    // #3
+    // use all sort + search algorithm
     
     return 0;
 }
