@@ -24,9 +24,19 @@ class LinkedList_Sort
 class LinkedList_Search
 {
     public:
-        void sequentialSearch()
+        void sequentialSearch(Category, Electronics, PaymentMethod, Credit Card) //Rating, 1 
         {
+            if (Node->text1 == text2)
+            {
 
+            }
+            if (text != NULL)
+            {
+                if(Node->text3 == text4)
+                {
+
+                }
+            }
         }
         void linearSearch()
         {
@@ -68,7 +78,7 @@ class Array_Search
     public:
         void sequentialSearch()
         {
-
+ 
         }
         void linearSearch()
         {

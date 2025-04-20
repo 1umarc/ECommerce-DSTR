@@ -12,13 +12,31 @@ class Array
         {
 
         }
+
+        //1
+        void parseDate()
+        {
+            arr[4] = date.substr(0, 2);
+        }
+
+        //2
+        void percentage()
+        {
+
+        }
+
+        //3
+        void textFrequency()
+        {
+            
+        }
 };
 
 int main()
 {
     //1
 
-    // use all sort algorithm
+    // use all sort algorithm to sort by date
 
     //2
  
