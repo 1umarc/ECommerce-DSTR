@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
+#include <cmath>
 using namespace std;
 
 const int MAX_SIZE = 5000;
@@ -17,6 +18,19 @@ struct Transaction {
     string dateStr;
     int sortableDate;
     string paymentMethod;
+};
+
+// Node for the linked list
+struct Node {
+    Transaction data;
+    Node* next;
+    string text;
+    int count;
+};
+
+struct ReviewCount {
+    string text;
+    int count;
 };
 
 // Struct for review.csv /////
@@ -199,6 +213,150 @@ void displayCombined(CombinedData combined[], int count) {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+//////Q2/////////////
+// Build linked list from transaction array
+Node* buildLinkedList(const Transaction transactions[], int size) {
+    Node* head = nullptr;
+    for (int i = 0; i < size; ++i) {
+        Node* newNode = new Node{transactions[i], head};
+        head = newNode;
+    }
+    return head;
+}
+
+// Count Electronics purchases with Credit Card
+int countElectronicsWithCreditCard(int mode, Node* head, const Transaction transactions[], int size) {
+    int count = 0;
+
+    if (mode == 1) { // linked list
+        Node* current = head;
+        while (current != nullptr) {
+            if (current->data.category == "Electronics" && current->data.paymentMethod == "Credit Card") {
+                count++;
+            }
+            current = current->next;
+        }
+    } else if (mode == 2) { // array
+        for (int i = 0; i < size; i++) {
+            if (transactions[i].category == "Electronics" && transactions[i].paymentMethod == "Credit Card") {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
+
+
+// int countElectronicsWithCreditCard(int mode, Node* head, const Transaction transactions[], int size) {
+//     int count = 0;
+//     Transaction* t = &current->data;
+//     const Transaction* t = &transactions[i];
+//     if (mode == 1) { // linked list
+//         for (Node* current = head; current != nullptr; current = current->next) {
+//             if (t->category == "Electronics" && t->paymentMethod == "Credit Card") {
+//             }
+//         }
+//     } 
+//     else if (mode == 2) { // array
+//         for (int i = 0; i < size; i++) {
+//             if (t->category == "Electronics" && t->paymentMethod == "Credit Card") {
+//             }
+//         } count++;
+//     }
+
+//     return count;
+// }
+
+// Percentage calculation
+int calculatePercentage(int electronicsWithCreditCard, int totalElectronics) {
+    if (totalElectronics == 0) return 0;
+    double percentage = (static_cast<double>(electronicsWithCreditCard) / totalElectronics) * 100;
+    return static_cast<int>(round(percentage));
+}
+////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+/////////////////////////////FREQ WORD COUNT VERSION (Q3) ////////////////////////////
+
+//////////////////////////// ARRAY VERSION ////////////////////////////
+
+void displayRepeatedReviewTextsArray(Review reviews[], int count) {
+    ReviewCount reviewCounts[MAX_SIZE];
+    int reviewCountsSize = 0;
+
+    for (int i = 0; i < count; ++i) {
+        bool found = false;
+        for (int j = 0; j < reviewCountsSize; ++j) {
+            if (reviewCounts[j].text == reviews[i].reviewText) {
+                reviewCounts[j].count++;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            reviewCounts[reviewCountsSize++] = {reviews[i].reviewText, 1};
+        }
+    }
+
+    cout << "\n[ARRAY] Review Text Repetition Summary:\n";
+    int mostRepeatedIndex = 0;
+    for (int i = 0; i < reviewCountsSize; ++i) {
+        cout << "\"" << reviewCounts[i].text << "\" was repeated " << reviewCounts[i].count << " time(s)." << endl;
+        
+        if (reviewCounts[i].count > reviewCounts[mostRepeatedIndex].count) {
+            mostRepeatedIndex = i;
+        }
+    }
+
+    if (reviewCountsSize > 0) {
+        cout << "\nMost repeated review:\n\""
+             << reviewCounts[mostRepeatedIndex].text
+             << "\" repeated "
+             << reviewCounts[mostRepeatedIndex].count
+             << " time(s)." << endl;
+    }
+}
+
+//////////////////////////// LINKED LIST VERSION ////////////////////////////
+
+void insertOrUpdate(Node*& head, const string& reviewText) {
+    for (Node* current = head; current != nullptr; current = current->next) {
+        if (current->text == reviewText) {
+            current->count++;
+            return;
+        }
+    }
+
+    head = new Node{reviewText, 1, head};
+}
+
+void displayRepeatedReviewTextsLinkedList(Review reviews[], int count) {
+    Node* head = nullptr;
+
+    for (int i = 0; i < count; ++i) {
+        insertOrUpdate(head, reviews[i].reviewText);
+    }
+
+    cout << "\n[LINKED LIST] Review Text Repetition Summary:\n";
+    Node* mostRepeated = nullptr;
+    for (Node* current = head; current != nullptr; current = current->next) {
+        cout << "\"" << current->text << "\" was repeated " << current->count << " time(s)." << endl;
+        if (mostRepeated == nullptr || current->count > mostRepeated->count) {
+            mostRepeated = current;
+        }
+    }
+
+    if (mostRepeated != nullptr) {
+        cout << "\nMost repeated review:\n\"" << mostRepeated->text << "\" repeated " << mostRepeated->count << " time(s)." << endl;
+    }
+
+}
+//////////////////////////////////////////////
 
 int main() {
     Transaction transactions[MAX_SIZE];
@@ -226,5 +384,32 @@ int main() {
         cout << "No data to display. Make sure customerIDs match in both files.\n";
     }
 
+
+
+///////////////////////////////////////////// Q2 ////////////////////////////////////////////////////
+    // Count total electronics
+    int electronicsCount = 0;
+    for (int i = 0; i < transactionCount; ++i) {
+        if (transactions[i].category == "Electronics") {
+            electronicsCount++;
+        }
+    }
+
+    // Build linked list
+    Node* head = buildLinkedList(transactions, transactionCount);
+
+    // Count electronics with credit card (Linked List)
+    int electronicsWithCreditCard = countElectronicsWithCreditCard(1, head, transactions, transactionCount);
+
+    // Count electronics with credit card (Array)
+    int electronicsWithCreditCard = countElectronicsWithCreditCard(2, head, transactions, transactionCount);
+
+    // Calculate percentage
+    int percentage = calculatePercentage(electronicsWithCreditCard, electronicsCount);
+
+    cout << "Percentage of 'Electronics' purchases made with 'Credit Card': " << percentage << "%" << endl;
+
     return 0;
+
+///////////////////////////////////////////// Q3 ////////////////////////////////////////////////////
 }
