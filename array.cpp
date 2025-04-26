@@ -2,200 +2,301 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <iomanip>
-
 using namespace std;
 
-// Define file types as an enum for type safety
-enum FileType {
-    TRANSACTION,
-    REVIEW
+// Review
+struct Review 
+{
+    string productID;
+    string customerID;
+    int rating;
+    string reviewText;
 };
 
-// Define maximum rows and columns for our 2D arrays
-const int MAX_ROWS = 5100;
-const int MAX_COLS = 6; // Max columns for transactions (6 fields)
-const int MAX_COLS_REVIEW = 4; // Max columns for reviews (4 fields)
+// Transaction
+struct Transaction 
+{
+    string customerID;
+    string product;
+    string category;
+    double price;
+    string date;
+    string paymentMethod;
+};
 
-class Array
+// Both (Transaction + Review)
+struct Both 
+{
+    string customerID;
+    string product;
+    string category;
+    double price;
+    string date;
+    string paymentMethod;
+    string productID;
+    int rating;
+    string reviewText;
+};
+
+// Customer
+struct Customer 
+{
+    string customerID;
+};
+
+// Bucket as a 2D Array Container
+template <typename Array>
+struct Bucket 
+{
+    Array* data;
+    int size;
+    int capacity;
+
+    // Constructor - Initializes with capacity
+    Bucket(int initial_capacity = 10) 
+    {
+        size = 0;
+        capacity = initial_capacity;
+        data = new Array[capacity];
+    }
+
+    // Deconstructor - Cleans up dynamically allocated memory
+    ~Bucket() 
+    {
+        delete[] data;
+    }
+
+    // Adds a data to the bucket
+    void add(const Array& newData) 
+    {
+        if (size >= capacity) 
+        {
+            resize();
+        }
+        data[size++] = newData;
+    }
+    
+    // Resizes the bucket
+    void resize() 
+    {
+        capacity *= 2;
+        Array* new_data = new Array[capacity];
+        for (int i = 0; i < size; ++i) 
+        {
+            new_data[i] = data[i];
+        }
+        delete[] data;
+        data = new_data;
+    }
+};
+
+// Array class
+class Array 
 {
 private:
-    string transactionData[MAX_ROWS][MAX_COLS]; // 2D array for transaction data
-    string reviewData[MAX_ROWS][MAX_COLS_REVIEW]; // 2D array for review data
-    int transactionRows = 0; // Actual number of rows read
-    int reviewRows = 0; // Actual number of rows read
+    // Instance-level Bucket objects
+    Bucket<Customer> customers;
+    Bucket<Review> reviews;
+    Bucket<Transaction> transactions;
+    Bucket<Both> both;
 
 public:
-    bool read(FileType type)
-    {   
+    // Constructor for Array
+    Array() 
+        : customers(10), reviews(10), transactions(10), both(10) {}
+
+    // Check if customer ID exists
+    bool customerExists(string& id) 
+    {
+        for (int i = 0; i < customers.size; ++i) 
+        {
+            if (customers.data[i].customerID == id)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Add customerID to customer Array if unique
+    void addCustomer(string& id) 
+    {
+        if (!customerExists(id)) 
+        {
+            customers.add(Customer{id});
+        }
+    }
+
+    // Build customer Array from both CSV files
+    void customerArray(string& reviewFile, string& transactionFile) 
+    {
         ifstream file;
-        string filePath;
-        
-        if (type == REVIEW)
-        {
-            filePath = "reviews.csv";
-        }
-        else // TRANSACTION
-        {
-            filePath = "transactions.csv";
-        }
-        
-        file.open(filePath);
-        if (!file.is_open())
-        {
-            cout << "Error opening " << filePath << endl;
-            return false;
-        }  
-
         string line;
-        getline(file, line); // Skip the header
 
-        // Read and store data in appropriate 2D array
-        if (type == TRANSACTION)
+        // Review
+        file.open(reviewFile);
+        getline(file, line);
+        while (getline(file, line)) 
         {
-            transactionRows = 0;
-            while (getline(file, line) && transactionRows < MAX_ROWS) 
-            {   
-                stringstream fileContent(line);
-                string value;
-                int col = 0;
-                
-                for(int i=0 ; i<6 ;i++)
-                {
-                    if(i<5)
-                    {
-                        getline(fileContent, value, ',');
-                    }
-                    else 
-                    {
-                        getline(fileContent,value);
-                    }
-                    transactionData[transactionRows][col++] = value;
-                }
-                transactionRows++;
-            }
+            stringstream ss(line);
+            string productID, customerID;
+            getline(ss, productID, ',');
+            getline(ss, customerID, ',');
+            addCustomer(customerID);
         }
-        else // REVIEW
-        {
-            reviewRows = 0;
-            while (getline(file, line) && reviewRows < MAX_ROWS) 
-            {
-                stringstream fileContent(line);
-                string value;
-                int col = 0;
-                
-                for(int j=0 ; j<4 ;j++)
-                {   
-                    if(j<3)
-                    {
-                        getline(fileContent, value, ',');    
-                    }
-                    else 
-                    {
-                        getline(fileContent,value);
-                    }
-                    reviewData[reviewRows][col++] = value; 
-                }  
-                reviewRows++;
-            }
-        }
-        
         file.close();
-        cout << "File opened and data stored successfully." << endl;
-        return true;
-    }
-    
-    void display(FileType type)
-    {   
-        if(type == TRANSACTION)
-        {   
-            cout << "Contents of transaction.csv:" << endl;
-            cout << "=================================================================================================================================\n";
-            cout << "|No     |Customer ID\t|Product\t\t|Category\t\t|Price\t\t|Date\t\t|Payment Method\t\t|\n";
-            cout << "=================================================================================================================================\n";
-           
-            for (int i = 0; i < transactionRows; i++) 
-            {
-                // Convert price string to double for formatting
-                double price = 0.0;
-                if (transactionData[i][3] != "NaN" && !transactionData[i][3].empty()) 
-                {
-                    price = stod(transactionData[i][3]);
-                }
-                
-                cout << "|" << left << setw(7) << (i+1) 
-                     << "|" << left << setw(15) << transactionData[i][0] 
-                     << "|" << setw(23) << transactionData[i][1] 
-                     << "|" << setw(23) << transactionData[i][2] 
-                     << "|RM" << setw(13) << price 
-                     << "|" << setw(15) << transactionData[i][4] 
-                     << "|" << setw(23) << transactionData[i][5] 
-                     << "|\n";
-            }
-            cout << "=================================================================================================================================\n";
-        }
-        else // REVIEW
+
+        // Read transaction file
+        file.open(transactionFile);
+        getline(file, line);
+        while (getline(file, line)) 
         {
-            cout << "\nContents of reviews.csv:" << endl;
-            cout << "=================================================================================================================================\n";
-            cout << "|No     |Product ID\t|Customer ID\t\t|Rating\t\t|Review Text\t\t\t\t\t\t\t|\n";
-            cout << "=================================================================================================================================\n";
-        
-            for (int i = 0; i < reviewRows; i++) 
-            {
-                cout << "|" << left << setw(7) << (i+1) 
-                     << "|" << left << setw(15) << reviewData[i][0] 
-                     << "|" << setw(23) << reviewData[i][1] 
-                     << "|" << setw(15) << reviewData[i][2] 
-                     << "|" << setw(63) << reviewData[i][3] 
-                     << "|\n";
-            }
-            cout << "=================================================================================================================================\n";
+            stringstream ss(line);
+            string customerID;
+            getline(ss, customerID, ',');
+            addCustomer(customerID);
         }
-    }    
-
-    void clean()
-    {
-
+        file.close();
     }
 
-    //1
-    void parseDate()
+    // Build Review Array from CSV file
+    void reviewArray(string& reviewFile) 
     {
-        // arr[4] = date.substr(0, 2);
+        ifstream file(reviewFile);
+        string line;
+        getline(file, line);
+
+        while (getline(file, line)) 
+        {
+            stringstream ss(line);
+            string productID, customerID, ratingStr, reviewText;
+            getline(ss, productID, ',');
+            getline(ss, customerID, ',');
+            getline(ss, ratingStr, ',');
+            getline(ss, reviewText);
+            int rating = stoi(ratingStr);
+
+            reviews.add({productID, customerID, rating, reviewText});
+        }
+        file.close();
     }
 
-    //2
-    void percentage()
+    // Search Review by customerID
+    Review findReview(string& id) 
     {
-
+        for (int i = 0; i < reviews.size; ++i) 
+        {
+            if (reviews.data[i].customerID == id) 
+            {
+                return reviews.data[i];
+            }
+        }
+        return Review();
     }
 
-    //3
-    void textFrequency()
+    // Build Transaction & Both Arrays using Customer Array (Check & Balance)
+    void transaction_bothArray(string& transactionFile) 
     {
-        
+        ifstream file(transactionFile);
+        string line;
+        getline(file, line);
+
+        while (getline(file, line)) 
+        {
+            stringstream ss(line);
+            string customerID, product, category, priceStr, date, paymentMethod;
+            getline(ss, customerID, ',');
+            getline(ss, product, ',');
+            getline(ss, category, ',');
+            getline(ss, priceStr, ',');
+            getline(ss, date, ',');
+            getline(ss, paymentMethod);
+
+            double price = stod(priceStr);
+
+            // Check if this customerID exists in Customer Array
+            if (customerExists(customerID)) 
+            {
+                // Search for a matching review
+                Review match = findReview(customerID);
+
+                // Add to the transaction Array
+                transactions.add(Transaction{customerID, product, category, price, date, paymentMethod});
+
+                if (!match.customerID.empty())
+                {
+                    both.add(Both{customerID, product, category, price, date, paymentMethod, match.productID, match.rating, match.reviewText});
+                    //cout << "Match: " << customerID << endl;
+                }
+                else
+                {
+                    both.add(Both{customerID, product, category, price, date, paymentMethod, "", -1,""});
+                }
+            }
+        }
+        file.close();
     }
-    
+
+    void displayBoth() 
+    {
+        for (int i = 0; i < both.size; ++i) 
+        {
+            cout << "==== Transaction + Review: " << i + 1 << " ====\n";
+            cout << "Customer ID: " << both.data[i].customerID << "\n";
+            cout << "Product: " << both.data[i].product << "\n";
+            cout << "Category: " << both.data[i].category << "\n";
+            cout << "Price: " << both.data[i].price << "\n";
+            cout << "Date: " << both.data[i].date << "\n";
+            cout << "Payment: " << both.data[i].paymentMethod << "\n";
+            cout << "Rating: " << (both.data[i].rating >= 0 ? to_string(both.data[i].rating) : "N/A") << "\n";
+            cout << "Review: " << (both.data[i].reviewText.empty() ? "N/A" : both.data[i].reviewText) << "\n";
+            cout << "--------------------------\n";
+        }
+    }
+
+    void displayTransactions() 
+    {
+        for (int i = 0; i < transactions.size; ++i) 
+        {
+            cout << "===== Transaction: " << i + 1 << " =====\n";
+            cout << "Customer ID: " << transactions.data[i].customerID << "\n";
+            cout << "Product: " << transactions.data[i].product << "\n";
+            cout << "Category: " << transactions.data[i].category << "\n";
+            cout << "Price: " << transactions.data[i].price << "\n";
+            cout << "Date: " << transactions.data[i].date << "\n";
+            cout << "Payment Method: " << transactions.data[i].paymentMethod << "\n";
+            cout << "--------------------------\n";
+        }
+    }
+
+    void displayReviews() 
+    {
+        for (int i = 0; i < reviews.size; ++i) 
+        {
+            cout << "===== Review: " << i + 1 << " =====\n";
+            cout << "Product ID: " << reviews.data[i].productID << "\n";
+            cout << "Customer ID: " << reviews.data[i].customerID << "\n";
+            cout << "Rating: " << reviews.data[i].rating << "\n";
+            cout << "Review Text: " << (reviews.data[i].reviewText.empty() ? "N/A" : reviews.data[i].reviewText) << "\n";
+            cout << "--------------------------\n";
+        }
+    }
+
 };
 
-int main()
+int main() 
 {
-    Array xw;
-    // Read transaction data
-    xw.read(REVIEW);
-    xw.display(REVIEW);
+    Array a;
+    string reviewFile = "reviews_lecturer.csv";
+    string transactionFile = "transactions_lecturer.csv";
 
-    //1
+    a.customerArray(reviewFile, transactionFile);
+    a.reviewArray(reviewFile);
+    a.transaction_bothArray(transactionFile);
 
-    // use all sort algorithm to sort by date
+    //a.displayTransactions();
+    //a.displayBoth();
+    a.displayReviews();
 
-    //2
- 
-    // use all of search algorithm
-
-    //3
-
-    // use all sort + search algorithm
-
+    return 0;
 }
