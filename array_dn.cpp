@@ -1,8 +1,9 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
 // HEAP SORT
-void heapify(int ar[], int size, int i) {
+void heapify(string ar[], int size, int i) {
     // find largest number between root, left child, and right child
     int largest = i;
     int left = 2 * i + 1;
@@ -21,7 +22,7 @@ void heapify(int ar[], int size, int i) {
     }
 }
 
-void heapsort(int ar[], int size){
+void heapsort(string ar[], int size){
     // build max heap
     for(int i = size / 2 - 1; i >= 0; i--){
         heapify(ar, size, i);
@@ -37,14 +38,14 @@ void heapsort(int ar[], int size){
 }
 
 // BINARY SEARCH
-int binarysearch(int ar[], int num, int first, int last) {
+int binarysearch(string ar[], const string& str, int first, int last) {
     // repeat until pointers first and last meet each other
     while (first <= last) {
         int mid = first + (last - first) / 2;
-        if (num == ar[mid]) {
+        if (str == ar[mid]) {
             return mid; // num is at the middle of array
         }
-        else if (num > ar[mid]) {
+        else if (str > ar[mid]) {
             first = mid + 1; // num is at the right side of mid
         }
         else {
@@ -56,8 +57,8 @@ int binarysearch(int ar[], int num, int first, int last) {
 
 // MAIN CODE
 int main() {
-    int ar[] = {23, 20, 15, 25, 13, 8, 18};
-    int num = 20;
+    string ar[] = {"banana", "apple", "grape", "orange", "kiwi", "mango", "cherry"};
+    string strToFind = "apple";
     int arsize = sizeof(ar) / sizeof(ar[0]);
     
     // sort the array
@@ -71,11 +72,11 @@ int main() {
     cout << "\n";
 
     // search for num
-    int found = binarysearch(ar, num, 0, arsize - 1);
+    int found = binarysearch(ar, strToFind, 0, arsize - 1);
     if (found == -1){
-        cout << num << " is not found is array.";
+        cout << strToFind << " is not found is array.";
     }
     else {
-        cout << num << " is located at index " << found;
+        cout << strToFind << " is located at index " << found;
     }
 }
