@@ -5,25 +5,48 @@
 
 using namespace std;
 
-struct Node 
+// Review
+struct Review 
 {
-    // Common field
     string customerID;
-    Node* next;
-
-    // Review fields
     string productID;
     int rating;
     string reviewText;
+    Review* next;
+};
 
-    // Transaction fields
+// Transaction
+struct Transaction 
+{
+    string customerID;
     string product;
     string category;
     double price;
     string date;
     string paymentMethod;
+    Transaction* next;
+};
 
-    bool isReview; // Flag to indicate review or transaction node
+// Both (Transaction + Review)
+struct Both 
+{
+    string customerID;
+    string product;
+    string category;
+    double price;
+    string date;
+    string paymentMethod;
+    string productID;
+    int rating;
+    string reviewText;
+    Both* next;
+};
+
+// Customer
+struct Customer 
+{
+    string customerID;
+    Customer* next;
 };
 
 
@@ -32,23 +55,41 @@ class LinkedList
 {
 private:
     // Points to the first node
-    Node* head;
-    int size;
+    Customer* customerHead;
+    Review* reviewHead;
+    Transaction* transactionHead;
+    Both* bothHead;
+
+    int customerSize;
+    int reviewSize;
+    int transactionSize;
+    int bothSize;
 
 public:
     // Constructor - Initializes empty first node
     LinkedList()
     {
-        head = nullptr;
-        size = 0;
+        customerHead = nullptr;
+        reviewHead = nullptr;
+        transactionHead = nullptr;
+        bothHead = nullptr;
+        customerSize = reviewSize = transactionSize = bothSize = 0;
     } 
 
     // Deconstructor - Mandatory to free memory as using heap
     ~LinkedList()
     {
+        clearList(customerHead, customerSize);
+        clearList(reviewHead, reviewSize);
+        clearList(transactionHead, transactionSize);
+        clearList(bothHead, bothSize);
+    }   
+
+    template<typename Node>
+    void clearList(Node*& delNode, int& size) 
+    {
         // Retrieves head, store address of next node, deletes, then repeats
-        Node* delNode = head;
-        while (delNode != nullptr) 
+        while (delNode) 
         {
             Node* next = delNode->next;
             delete delNode;
@@ -57,109 +98,262 @@ public:
         size = 0;
     }
 
-    // Inserting nodes from the csv files to form Linked List - O(1)
-    void read(bool isReview)
-    {   
-        string filePath;
-        if (isReview)
+    // Check if customer ID exists
+    bool customerCheck(Customer* head, string& id) 
+    {
+        Customer* current = head;
+        while (current) 
         {
-            filePath = "reviews.csv";
+            if (current->customerID == id)
+            {
+                return true;
+            }
+            current = current->next;
         }
-        else
-        {
-            filePath = "transactions_lecturer.csv";
-        }
-        ifstream file(filePath);
+        return false;
+    }
 
+    // Add customerID to customer LinkedList if unique
+    void uniqueAdd(Customer*& head, string& id) 
+    {
+        if (!customerCheck(head, id)) 
+        {
+            Customer* newNode = new Customer{id, head};
+            head = newNode;
+            customerSize++;
+        }
+    }
+
+    // Build customer Linked List from both CSV files
+    void customerLinkedList(string& review, string& transaction) 
+    {
+        ifstream file;
         string line;
-        getline(file, line); // Skips header
 
-        while (getline(file, line))
+        // Review
+        file.open(review);
+        getline(file, line);
+        while (getline(file, line)) 
         {
             stringstream ss(line);
-            // Creates new node which is the new head
-            Node* newNode = new Node();
-            newNode->next = nullptr;
-            newNode->isReview = isReview;
+            string productID, customerID;
+            getline(ss, productID, ',');
+            getline(ss, customerID, ',');
+            uniqueAdd(customerHead, customerID);
+        }
+        file.close();
 
-            if (isReview)
-            {
-                string productID, customerID, ratingStr, reviewText;
-                getline(ss, productID, ',');
-                getline(ss, customerID, ',');
-                getline(ss, ratingStr, ',');
-                getline(ss, reviewText);
-
-                newNode->productID = productID;
-                newNode->customerID = customerID;
-                try {
-                    newNode->rating = stoi(ratingStr);
-                } catch (const std::invalid_argument& e) {
-                    cerr << "Invalid rating value: '" << ratingStr << "' in reviews.csv" << endl;
-                    delete newNode; // prevent memory leak
-                    continue;       // skip this line
-                } //convert ratingStr back to int
-                newNode->reviewText = reviewText;
-            }
-            else
-            {
-                string customerID, product, category, priceStr, date, paymentMethod;
-                getline(ss, customerID, ',');
-                getline(ss, product, ',');
-                getline(ss, category, ',');
-                getline(ss, priceStr, ',');
-                getline(ss, date, ',');
-                getline(ss, paymentMethod);
-
-                newNode->customerID = customerID;
-                newNode->product = product;
-                newNode->category = category;
-                newNode->price = stod(priceStr); //convert ratingStr back to double
-                newNode->date = date;
-                newNode->paymentMethod = paymentMethod;
-            }
-
-            // Inserts from beginning, at head
-            newNode->next = head;
-            head = newNode;
-            size++;
+        // Read transaction file
+        file.open(transaction);
+        getline(file, line);
+        while (getline(file, line)) 
+        {
+            stringstream ss(line);
+            string customerID;
+            getline(ss, customerID, ',');
+            uniqueAdd(customerHead, customerID);
         }
         file.close();
     }
 
-
-    // Print the Linked List
-    void display() 
+    // Build Review List from CSV file
+    void reviewLinkedList(string& reviewFile) 
     {
-        // Traverses from head to NULL
-        Node* current = head;
-        int count = 1;
+        ifstream file(reviewFile);
+        string line;
+        getline(file, line);
 
-        while (current != nullptr)
+        while (getline(file, line)) 
         {
-            if (current->isReview)
-            {
-                cout << "===== Reviews Node: " << count++ << " =====\n";
-                cout << "Customer ID: " << current->customerID << "\n";
-                cout << "Product ID: " << current->productID << "\n";
-                cout << "Rating: " << current->rating << "\n";
-                cout << "Review Text: " << current->reviewText << "\n";
-            }
-            else
-            {
-                cout << "===== Transactions Node: " << count++ << " =====\n";
-                cout << "Customer ID: " << current->customerID << "\n";
-                cout << "Product: " << current->product << "\n";
-                cout << "Category: " << current->category << "\n";
-                cout << "Price: " << current->price << "\n";
-                cout << "Date: " << current->date << "\n";
-                cout << "Payment Method: " << current->paymentMethod << "\n";
-            }
-            current = current->next;  
+            stringstream ss(line);
+            string productID, customerID, ratingStr, reviewText;
+            getline(ss, productID, ',');
+            getline(ss, customerID, ',');
+            getline(ss, ratingStr, ',');
+            getline(ss, reviewText);
+
+            int rating = stoi(ratingStr);
+
+            Review* newNode = new Review{customerID, productID, rating, reviewText, reviewHead};
+            reviewHead = newNode;
+            reviewSize++;
         }
-        if (size == 0)
+        file.close();
+    }
+
+    // Search Review by customerID
+    Review* reviewFinder(Review* current, string& id) 
+    {
+        while (current) 
         {
-            cout << "The Linked List is NULL!" << endl;
+            if (current->customerID == id)
+            { 
+                return current; 
+            }
+            current = current->next;
+        }
+        return nullptr;
+    }   
+
+    // Build Transaction & Both Linked Lists using Customer Linked List (Check & Balance)
+    void transaction_bothLinkedList(string& transactionFile) 
+    {
+        ifstream file(transactionFile);
+        string line;
+        getline(file, line);
+
+        while (getline(file, line)) 
+        {
+            stringstream ss(line);
+            string customerID, product, category, priceStr, date, paymentMethod;
+            getline(ss, customerID, ',');
+            getline(ss, product, ',');
+            getline(ss, category, ',');
+            getline(ss, priceStr, ',');
+            getline(ss, date, ',');
+            getline(ss, paymentMethod);
+
+            double price = stod(priceStr);
+
+            // Check if this customerID exists in Customer Linked List
+            if (customerCheck(customerHead, customerID)) 
+            {
+                // Search for a matching review
+                Review* match = reviewFinder(reviewHead, customerID);
+
+                // Add to the transaction Linked List
+                Transaction* transNode = new Transaction{customerID, product, category, price, date, paymentMethod, transactionHead};
+                transactionHead = transNode;
+                transactionSize++;
+
+                // Add to the both Linked List
+                Both* bothNode = new Both;
+                bothNode->customerID = customerID;
+                bothNode->product = product;
+                bothNode->category = category;
+                bothNode->price = price;
+                bothNode->date = date;
+                bothNode->paymentMethod = paymentMethod;
+
+                if (match) 
+                {
+                    bothNode->productID = match->productID;
+                    bothNode->rating = match->rating;
+                    bothNode->reviewText = match->reviewText;
+                    //cout << "Match: " << customerID << endl;
+                } 
+                else 
+                {
+                    bothNode->productID = "";
+                    bothNode->rating = -1;
+                    bothNode->reviewText = "";
+                }
+
+                // if (bothNode->customerID == "CUST1515") 
+                // {
+                // cout << "=== Found CUST1515 ===" << endl;
+                // cout << "Product: " << bothNode->product << endl;
+                // cout << "Category: " << bothNode->category << endl;
+                // cout << "Price: RM" << bothNode->price << endl;
+                // cout << "Date: " << bothNode->date << endl;
+                // cout << "Payment: " << bothNode->paymentMethod << endl;
+                // cout << "Review ProductID: " << bothNode->productID << endl;
+                // cout << "Rating: " << bothNode->rating << endl;
+                // cout << "Review: " << bothNode->reviewText << endl;
+                // cout << "=======================" << endl << endl;
+                // }
+
+                bothNode->next = bothHead;
+                bothHead = bothNode;
+                bothSize++;
+            }
+        }
+        file.close();
+    }
+
+    // Print the both Linked List
+    void displayBoth() 
+    {
+        int count = 1;
+        Both* current = bothHead;
+        while (current) 
+        {
+            cout << "==== Transaction + Review Node: " << count++ << " ====\n";
+            cout << "Customer ID: " << current->customerID << endl;
+            cout << "Product: " << current->product << endl;
+            cout << "Category: " << current->category << endl;
+            cout << "Price: " << current->price << endl;
+            cout << "Date: " << current->date << endl;
+            cout << "Payment Method: " << current->paymentMethod << endl;
+            cout << "Review Rating: " << (current->rating >= 0 ? to_string(current->rating) : "N/A") << endl;
+            cout << "Review Text: " << (current->reviewText.empty() ? "N/A" : current->reviewText) << endl;
+            cout << "--------------------------\n";
+            current = current->next;
+        }
+
+        if (count == 1)
+        {
+            cout << "The Transaction + Review Linked List is NULL!" << endl;
+        }
+        else
+        {
+            cout << "Total Transaction + Review Size: " << bothSize << endl;
+        }
+    }
+
+    // Print the transactions Linked List
+    void displayTransactions() 
+    {
+        int count = 1;
+        Transaction* current = transactionHead;
+    
+        while (current != nullptr) 
+        {
+            cout << "===== Transaction Node: " << count++ << " =====\n";
+            cout << "Customer ID: " << current->customerID << "\n";
+            cout << "Product: " << current->product << "\n";
+            cout << "Category: " << current->category << "\n";
+            cout << "Price: " << current->price << "\n";
+            cout << "Date: " << current->date << "\n";
+            cout << "Payment Method: " << current->paymentMethod << "\n";
+            cout << "--------------------------\n";
+            current = current->next;
+        }
+    
+        if (count == 1)
+        {
+            cout << "The Transaction Linked List is NULL!" << endl;
+        }
+        else
+        {
+            cout << "Total Transaction Size: " << transactionSize << endl;
+        }
+    }
+
+    // Print the reviews Linked List
+    void displayReviews() 
+    {
+        int count = 1;
+        Review* current = reviewHead;
+
+        while (current != nullptr) 
+        {
+            cout << "===== Review Node: " << count++ << " =====\n";
+            cout << "Customer ID: " << current->customerID << "\n";
+            cout << "Product ID: " << current->productID << "\n";
+            cout << "Rating: " << current->rating << "\n";
+            cout << "Review Text: " << current->reviewText << "\n";
+            cout << "--------------------------\n";
+            current = current->next;
+        }
+
+        if (count == 1)
+        {
+            cout << "The Review Linked List is NULL!" << endl;
+        }
+        else
+        {
+            cout << "Total Review Size: " << reviewSize << endl;
         }
     }
 
@@ -171,7 +365,7 @@ public:
     //Q1
     void parseDate()
     {
-        Node->date.substr(0, 2);
+        //Node->date.substr(0, 2);
     }
 
     //2
@@ -189,20 +383,26 @@ public:
 
 int main()
 {
-    LinkedList l;
-    // Reviews.csv
-    l.read(true);
-    l.display();
 
-    // Transactions.csv
-    l.read(false);
-    l.display();  
+    LinkedList ll;
 
+    string reviewFile = "reviews_lecturer.csv";
+    string transactionFile = "transactions_lecturer.csv";
+
+    // Build all Linked Lists
+    ll.customerLinkedList(reviewFile, transactionFile);
+    ll.reviewLinkedList(reviewFile);
+    ll.transaction_bothLinkedList(transactionFile);
+
+    // Display
+    //ll.displayReviews();
+    //ll.displayTransactions();
+    ll.displayBoth();
+
+    
     //1
     // use all sort algorithm
-    // l.read(true);
-    // LinkedList_Sort.mergeSort(l);
-    // l.display();
+    
 
     //2
  
