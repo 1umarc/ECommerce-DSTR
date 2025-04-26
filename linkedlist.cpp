@@ -53,7 +53,7 @@ struct Customer
 // Linked List class
 class LinkedList
 {
-private:
+public:
     // Points to the first node
     Customer* customerHead;
     Review* reviewHead;
@@ -65,7 +65,6 @@ private:
     int transactionSize;
     int bothSize;
 
-public:
     // Constructor - Initializes empty first node
     LinkedList()
     {
@@ -248,21 +247,6 @@ public:
                     bothNode->rating = -1;
                     bothNode->reviewText = "";
                 }
-
-                // if (bothNode->customerID == "CUST1515") 
-                // {
-                // cout << "=== Found CUST1515 ===" << endl;
-                // cout << "Product: " << bothNode->product << endl;
-                // cout << "Category: " << bothNode->category << endl;
-                // cout << "Price: RM" << bothNode->price << endl;
-                // cout << "Date: " << bothNode->date << endl;
-                // cout << "Payment: " << bothNode->paymentMethod << endl;
-                // cout << "Review ProductID: " << bothNode->productID << endl;
-                // cout << "Rating: " << bothNode->rating << endl;
-                // cout << "Review: " << bothNode->reviewText << endl;
-                // cout << "=======================" << endl << endl;
-                // }
-
                 bothNode->next = bothHead;
                 bothHead = bothNode;
                 bothSize++;
@@ -361,24 +345,6 @@ public:
     {
 
     }
-
-    //Q1
-    void parseDate()
-    {
-        //Node->date.substr(0, 2);
-    }
-
-    //2
-    void percentage()
-    {
-
-    }
-
-    //3
-    void textFrequency()
-    {
-        
-    }
 };
 
 int main()
@@ -386,30 +352,29 @@ int main()
 
     LinkedList ll;
 
-    string reviewFile = "reviews_lecturer.csv";
+    string reviewFile = "reviews_lecturer.csv";               // TO DO: can't run reviews
     string transactionFile = "transactions_lecturer.csv";
 
-    // Build all Linked Lists
     ll.customerLinkedList(reviewFile, transactionFile);
     ll.reviewLinkedList(reviewFile);
     ll.transaction_bothLinkedList(transactionFile);
 
-    // Display
     //ll.displayReviews();
     //ll.displayTransactions();
-    ll.displayBoth();
+    //ll.displayBoth();
 
+    LinkedList_Sort lls;
+    lls.mergeSort(ll.bothHead); // Q1
+    lls.mergeSort(ll.transactionHead); // Q2
+    lls.mergeSort(ll.reviewHead); // Q3
     
     //1
     // use all sort algorithm
     
-
     //2
- 
     // use all of search algorithm
 
     //3
-
     // use all sort + search algorithm
     
     return 0;

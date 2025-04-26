@@ -93,17 +93,12 @@ struct Bucket
 // Array class
 class Array 
 {
-private:
-    // Instance-level Bucket objects
-    Bucket<Customer> customers;
-    Bucket<Review> reviews;
-    Bucket<Transaction> transactions;
-    Bucket<Both> both;
-
 public:
-    // Constructor for Array
-    Array() 
-        : customers(10), reviews(10), transactions(10), both(10) {}
+    // Instance Bucket objects
+    Bucket<Customer> customers = Bucket<Customer>();
+    Bucket<Review> reviews = Bucket<Review>();
+    Bucket<Transaction> transactions = Bucket<Transaction>();
+    Bucket<Both> both = Bucket<Both>();
 
     // Check if customer ID exists
     bool customerExists(string& id) 
@@ -282,6 +277,10 @@ public:
         }
     }
 
+    void clean()
+    {
+
+    }
 };
 
 int main() 
@@ -296,7 +295,21 @@ int main()
 
     //a.displayTransactions();
     //a.displayBoth();
-    a.displayReviews();
+    //a.displayReviews();
+
+    Array_Sort as;
+    as.mergeSort(a.both); // Q1
+    as.mergeSort(a.transaction); // Q2
+    as.mergeSort(a.review); // Q3
+
+    //1
+    // use all sort algorithm
+    
+    //2
+    // use all of search algorithm
+
+    //3
+    // use all sort + search algorithm
 
     return 0;
 }
