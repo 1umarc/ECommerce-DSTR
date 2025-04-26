@@ -1,8 +1,9 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
 struct Node {
-    int data;
+    string data;
     Node* next;
 };
 
@@ -12,14 +13,14 @@ class LinkedList {
 public:
     LinkedList() : head(NULL) {}
 
-    void insertAtBeginning(int value) {
+    void insertAtBeginning(const string& value) {
         Node* newNode = new Node();
         newNode->data = value;
         newNode->next = head;
         head = newNode;
     }
 
-    void insertAtEnd(int value) {
+    void insertAtEnd(const string& value) {
         Node* newNode = new Node();
         newNode->data = value;
         newNode->next = NULL;
@@ -36,7 +37,7 @@ public:
         temp->next = newNode;
     }
 
-    void insertAtPosition(int value, int position) {
+    void insertAtPosition(const string& value, int position) {
         if (position < 1) {
             cout << "Position should be >= 1." << endl;
             return;
@@ -136,7 +137,7 @@ public:
         cout << "NULL" << endl;
     }
 
-    int recursiveSearch(Node* node, int key, int index) {
+    int recursiveSearch(Node* node, const string& key, int index) {
         if (!node) {
             return -1; // Key not found
         }
@@ -147,7 +148,7 @@ public:
     }
 
     // Public method to initiate the recursive search
-    int search(int key) {
+    int search(const string& key) {
         return recursiveSearch(head, key, 0);
     }
 
@@ -164,7 +165,7 @@ public:
             while (nextNode) {
                 if (current->data > nextNode->data) {
                     // Swap data
-                    int temp = current->data;
+                    string temp = current->data;
                     current->data = nextNode->data;
                     nextNode->data = temp;
                     swapped = true;
@@ -177,29 +178,33 @@ public:
 };
 
 int main() {
-    // Initialize a new linked list
-    LinkedList LL;
+// Initialize a new linked list
+LinkedList LL;
 
-    // Insert elements at the end
-    LL.insertAtEnd(20);
-    LL.insertAtEnd(30);
-    LL.insertAtEnd(10);
-    LL.insertAtEnd(50);
-    LL.insertAtEnd(40);
+// Insert string elements at the end
+LL.insertAtEnd("apple");
+LL.insertAtEnd("orange");
+LL.insertAtEnd("mango");
+LL.insertAtEnd("blueberry");
+LL.insertAtEnd("cherry");
 
-    cout << "Original List:\n";
-    LL.display();
+cout << "Original List:\n";
+LL.display();
 
-    LL.bubbleSort();
+// Sort the list using bubble sort
+LL.bubbleSort();
 
-    cout << "Sorted List in Ascending Order:\n";
-    LL.display();
+cout << "Sorted List in Ascending Order:\n";
+LL.display();
 
-    int key = 30;
-    int result = LL.search(key);
-    if (result != -1) {
-        cout << "Number " << key << " found at index " << result<< "." << endl;
-    } else {
-        cout << "Number " << key << " not found in the list." << endl;
-    }
+// Search for a specific string
+string key = "mango";
+int result = LL.search(key);
+if (result != -1) {
+    cout << "String \"" << key << "\" found at index " << result << "." << endl;
+} else {
+    cout << "String \"" << key << "\" not found in the list." << endl;
+}
+
+return 0;
 }
