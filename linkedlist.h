@@ -1,53 +1,9 @@
+#include "structs.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 using namespace std;
-
-// Review
-struct Review 
-{
-    string customerID;
-    string productID;
-    int rating;
-    string reviewText;
-    Review* next;
-};
-
-// Transaction
-struct Transaction 
-{
-    string customerID;
-    string product;
-    string category;
-    double price;
-    string date;
-    string paymentMethod;
-    Transaction* next;
-};
-
-// Both (Transaction + Review)
-struct Both 
-{
-    string customerID;
-    string product;
-    string category;
-    double price;
-    string date;
-    string paymentMethod;
-    string productID;
-    int rating;
-    string reviewText;
-    Both* next;
-};
-
-// Customer
-struct Customer 
-{
-    string customerID;
-    Customer* next;
-};
-
 
 // Linked List class
 class LinkedList

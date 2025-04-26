@@ -1,49 +1,10 @@
+#include "structs.h"
 #include <iostream>
-#include <fstream>
+#include <fstream>  
 #include <sstream>
 #include <string>
 
 using namespace std;
-
-// Review
-struct Review 
-{
-    string productID;
-    string customerID;
-    int rating;
-    string reviewText;
-};
-
-// Transaction
-struct Transaction 
-{
-    string customerID;
-    string product;
-    string category;
-    double price;
-    string date;
-    string paymentMethod;
-};
-
-// Both (Transaction + Review)
-struct Both 
-{
-    string customerID;
-    string product;
-    string category;
-    double price;
-    string date;
-    string paymentMethod;
-    string productID;
-    int rating;
-    string reviewText;
-};
-
-// Customer
-struct Customer 
-{
-    string customerID;
-};
 
 // Bucket as a 2D Array Container
 template <typename Array>

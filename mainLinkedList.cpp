@@ -1,15 +1,9 @@
-#include "algorithms_xw.h"
-#include "algorithms_ck.h"
-#include "algorithms_dn.h"
 #include "algorithms_lm.h"
-#include "helper.h"
-#include "linkedlist.h"
 
 using namespace std;
 
 int main()
 {
-
     LinkedList ll;
 
     string reviewFile = "reviews_lecturer.csv";               // TO DO: can't run reviews
@@ -23,10 +17,10 @@ int main()
     //ll.displayTransactions();
     //ll.displayBoth();
 
-    LinkedList_Sort lls;
-    lls.mergeSort(ll.bothHead); // Q1
-    lls.mergeSort(ll.transactionHead); // Q2
-    lls.mergeSort(ll.reviewHead); // Q3
+    // LinkedList_Sort lls;
+    // lls.mergeSort(ll.bothHead); // Q1
+    // lls.mergeSort(ll.transactionHead); // Q2
+    // lls.mergeSort(ll.reviewHead); // Q3
     
     //1
     // use all sort algorithm
