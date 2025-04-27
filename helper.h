@@ -83,8 +83,8 @@ public:
 
     //Q3: Frequency
     // Array Version - To return Array
-    template<typename Array>
-    static Bucket<Frequency> frequencyArray(Bucket<Array>& bucket, string field) 
+    template<typename ArrayType>
+    static Bucket<Frequency> frequencyArray(Bucket<ArrayType>& bucket, string field) 
     {
         Bucket<Frequency> frequencies;
     
@@ -100,7 +100,7 @@ public:
             else if (field == "date") 
             {
                 // Check if Bucket has "date" field manually
-                if constexpr (std::is_same<Array, Both>::value) 
+                if constexpr (std::is_same<ArrayType, Both>::value) 
                 {
                     text = bucket.data[i].date;
                 }
@@ -126,7 +126,14 @@ public:
                 frequencies.add(Frequency{text, 1});
             }
         }
-    
+
+        displayFrequencyA(frequencies, field);
+        return frequencies;
+    }
+
+    template<typename FrequencyType>
+    static void displayFrequencyA(FrequencyType& frequencies, const string& field)
+    {
         cout << "\nArray Frequency Summary for '" << field << "':\n";
         int mostRepeatedIndex = 0;
         for (int i = 0; i < frequencies.size; ++i) 
@@ -137,19 +144,18 @@ public:
                 mostRepeatedIndex = i;
             }
         }
-    
+
         if (frequencies.size > 0)
         {
             cout << "\nMost repeated \"" << field << "\":\n\""
-                 << frequencies.data[mostRepeatedIndex].text
-                 << "\" repeated "
-                 << frequencies.data[mostRepeatedIndex].count
-                 << " time(s)." << endl;
+                << frequencies.data[mostRepeatedIndex].text
+                << "\" repeated "
+                << frequencies.data[mostRepeatedIndex].count
+                << " time(s)." << endl;
         }
-
-        return frequencies;
     }
-    
+
+
     // Linked List Version - To return Linked List
     template<typename NodeType>
     static Frequency* frequencyLinkedList(NodeType* head, string field) 
@@ -194,6 +200,13 @@ public:
             }
         }
 
+        displayFrequencyLL(freqHead, field);
+        return freqHead;
+    }
+
+    template<typename FrequencyType>
+    static void displayFrequencyLL(FrequencyType* freqHead, const string& field)
+    {
         cout << "\nLinked List Frequency Summary for '" << field << "':\n";
         Frequency* mostRepeated = nullptr;
         for (Frequency* curr = freqHead; curr != nullptr; curr = curr->next) 
@@ -213,7 +226,5 @@ public:
                 << mostRepeated->count
                 << " time(s)." << endl;
         }
-
-        return freqHead;
     }
 };

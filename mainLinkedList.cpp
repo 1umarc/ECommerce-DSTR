@@ -1,5 +1,4 @@
-//#include "algorithms_lm.h"
-#include "helper.h"
+#include "algorithms_lm.h"
 
 using namespace std;
 
@@ -14,30 +13,30 @@ int main()
     ll.reviewLinkedList(reviewFile);
     ll.transaction_bothLinkedList(transactionFile);
     
-
     //ll.displayReviews();  
     //ll.displayTransactions();
-    //ll.displayBoth();
 
-    // LinkedList_Sort lls;
-    // lls.mergeSort(ll.bothHead); // Q1
-    // lls.mergeSort(ll.transactionHead); // Q2
-    // lls.mergeSort(ll.reviewHead); // Q3
-   
-    //1
-    // use all sort algorithm
-    bool test = Helper::compareDate(ll.bothHead->date, ll.bothHead->next->date);
-    cout << test << endl;
-    Helper::frequencyLinkedList(ll.bothHead, "date");
+    LinkedList_Sort llso;
+    LinkedList_Search llse;
+    Helper h;
+  
+    // Q1 - use all sort algorithm
+    llso.mergeSort(ll.bothHead);
+    //ll.displayBoth();
+    h.frequencyLinkedList(ll.bothHead, "date");
     
-    //2
-    // use all of search algorithm
-    double num = Helper::calculatePercentage(153, 502);
+    // Q2 - use all of search algorithm
+    int transSize = llse.sequentialSearch(ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
+    cout << "Size: " << transSize << endl;
+    double num = h.calculatePercentage(transSize, ll.transactionSize);
     cout << num << "%" << endl;
 
-    //3
-    // use all sort + search algorithm
-    Helper::frequencyLinkedList(ll.reviewHead, "reviewText");
-    
+    // Q3 - use all sort + search algorithm
+    int reviewSize = llse.sequentialSearch(ll.reviewHead, "rating", "1");
+    cout << "Size: " << reviewSize << endl;
+    Frequency* freqHead = h.frequencyLinkedList(ll.reviewHead, "reviewText");
+    llso.mergeSort(freqHead);
+    h.displayFrequencyLL(freqHead, "reviewText");
+
     return 0;
 }
