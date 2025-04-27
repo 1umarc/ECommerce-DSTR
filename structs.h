@@ -53,11 +53,5 @@ struct Frequency
 {
     string text;
     int count;
-};
-
-struct FrequencyNode 
-{
-    string text;
-    int count;
-    FrequencyNode* next;
+    Frequency* next;
 };
