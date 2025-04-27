@@ -194,8 +194,22 @@ public:
                 }
                 if (temp == nullptr) 
                 {
-                    Frequency* newNode = new Frequency{text, 1, freqHead};
-                    freqHead = newNode;
+                    Frequency* newNode = new Frequency{text, 1, nullptr};
+                    // If the list is empty, new node becomes the head
+                    if (freqHead == nullptr) 
+                    {
+                        freqHead = newNode;
+                    } 
+                    else 
+                    {
+                        // Traverse to the end and add the new node there
+                        Frequency* current = freqHead;
+                        while (current->next != nullptr) 
+                        {
+                            current = current->next;
+                        }
+                        current->next = newNode;
+                    }
                 }
             }
         }

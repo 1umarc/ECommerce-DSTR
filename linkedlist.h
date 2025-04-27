@@ -72,8 +72,24 @@ public:
     {
         if (!customerCheck(head, id)) 
         {
-            Customer* newNode = new Customer{id, head};
-            head = newNode;
+            Customer* newNode = new Customer{id, nullptr};
+
+            // If LinkedList is empty, new node becomes head
+            if (head == nullptr) 
+            {
+                head = newNode;
+            }
+            else 
+            {
+                // Traverse to the end of the list
+                Customer* current = head;
+                while (current->next != nullptr) 
+                {
+                    current = current->next;
+                }
+                // Add the new node at the end
+                current->next = newNode;
+            }
             customerSize++;
         }
     }
@@ -128,8 +144,21 @@ public:
 
             int rating = stoi(ratingStr);
 
-            Review* newNode = new Review{customerID, productID, rating, reviewText, reviewHead};
-            reviewHead = newNode;
+            Review* newNode = new Review{customerID, productID, rating, reviewText, nullptr};
+
+            if (reviewHead == nullptr) 
+            {
+                reviewHead = newNode;
+            } 
+            else 
+            {
+                Review* current = reviewHead;
+                while (current->next != nullptr) 
+                {
+                    current = current->next;
+                }
+                current->next = newNode;
+            }
             reviewSize++;
         }
         file.close();
@@ -176,8 +205,20 @@ public:
                 Review* match = reviewFinder(reviewHead, customerID);
 
                 // Add to the transaction Linked List
-                Transaction* transNode = new Transaction{customerID, product, category, price, date, paymentMethod, transactionHead};
-                transactionHead = transNode;
+                Transaction* transNode = new Transaction{customerID, product, category, price, date, paymentMethod, nullptr};
+                if (transactionHead == nullptr) 
+                {
+                    transactionHead = transNode;
+                } 
+                else 
+                {
+                    Transaction* current = transactionHead;
+                    while (current->next != nullptr) 
+                    {
+                        current = current->next;
+                    }
+                    current->next = transNode;
+                }
                 transactionSize++;
 
                 // Add to the both Linked List
@@ -188,6 +229,7 @@ public:
                 bothNode->price = price;
                 bothNode->date = date;
                 bothNode->paymentMethod = paymentMethod;
+                bothNode->next = nullptr;
 
                 if (match) 
                 {
@@ -202,8 +244,20 @@ public:
                     bothNode->rating = -1;
                     bothNode->reviewText = "";
                 }
-                bothNode->next = bothHead;
-                bothHead = bothNode;
+
+                if (bothHead == nullptr) 
+                {
+                    bothHead = bothNode;
+                } 
+                else 
+                {
+                    Both* current = bothHead;
+                    while (current->next != nullptr) 
+                    {
+                        current = current->next;
+                    }
+                    current->next = bothNode;
+                }
                 bothSize++;
             }
         }
