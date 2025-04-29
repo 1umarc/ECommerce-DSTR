@@ -15,7 +15,7 @@ struct Bucket
     int capacity;
 
     // Constructor - Initializes with capacity
-    Bucket(int initial_capacity = 10) 
+    Bucket(int initial_capacity = 1)
     {
         size = 0;
         capacity = initial_capacity;
@@ -61,6 +61,14 @@ public:
     Bucket<Review> reviews = Bucket<Review>();
     Bucket<Transaction> transactions = Bucket<Transaction>();
     Bucket<Both> both = Bucket<Both>();
+
+    void delArray() 
+    {
+        customers.size = 0;
+        reviews.size = 0;
+        transactions.size = 0;
+        both.size = 0;
+    }
 
     // Check if customer ID exists
     bool customerExists(string& id) 

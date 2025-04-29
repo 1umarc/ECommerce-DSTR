@@ -1,6 +1,7 @@
 #include "array.h"
 #include "linkedlist.h"
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -126,19 +127,23 @@ public:
                 frequencies.add(Frequency{text, 1});
             }
         }
-
-        displayFrequencyA(frequencies, field);
         return frequencies;
     }
 
     template<typename FrequencyType>
     static void displayFrequencyA(FrequencyType& frequencies, const string& field)
     {
-        cout << "\nArray Frequency Summary for '" << field << "':\n";
+        cout << "Array Frequency Summary for '" << field << "':\n";
+        cout << left << setw(5) << "No." << setw(55) << "Data" << setw(15) << "Frequency" << endl;
+        cout << string(70, '-') << endl;
+
         int mostRepeatedIndex = 0;
         for (int i = 0; i < frequencies.size; ++i) 
         {
-            cout << "\"" << frequencies.data[i].text << "\" was repeated " << frequencies.data[i].count << " time(s).\n";
+            cout << left << setw(5) << (i + 1)
+                << setw(55) << frequencies.data[i].text
+                << setw(15) << frequencies.data[i].count << endl;
+
             if (frequencies.data[i].count > frequencies.data[mostRepeatedIndex].count) 
             {
                 mostRepeatedIndex = i;
@@ -147,10 +152,10 @@ public:
 
         if (frequencies.size > 0)
         {
-            cout << "\nMost repeated \"" << field << "\":\n\""
-                << frequencies.data[mostRepeatedIndex].text
-                << "\" repeated "
-                << frequencies.data[mostRepeatedIndex].count
+            cout << "\nMost Frequent '" << field << "': \"" 
+                << frequencies.data[mostRepeatedIndex].text 
+                << "\" occurred " 
+                << frequencies.data[mostRepeatedIndex].count 
                 << " time(s)." << endl;
         }
     }
@@ -213,32 +218,35 @@ public:
                 }
             }
         }
-
-        displayFrequencyLL(freqHead, field);
         return freqHead;
     }
 
     template<typename FrequencyType>
     static void displayFrequencyLL(FrequencyType* freqHead, const string& field)
     {
-        cout << "\nLinked List Frequency Summary for '" << field << "':\n";
+        cout << "Linked List Frequency Summary for '" << field << "':\n";
+        cout << left << setw(5) << "No." << setw(55) << "Data" << setw(15) << "Frequency" << endl;
+        cout << string(70, '-') << endl;
+    
+        int index = 1;
         Frequency* mostRepeated = nullptr;
-        for (Frequency* curr = freqHead; curr != nullptr; curr = curr->next) 
+        for (Frequency* curr = freqHead; curr != nullptr; curr = curr->next, ++index) 
         {
-            cout << "\"" << curr->text << "\" was repeated " << curr->count << " time(s).\n";
+            cout << left << setw(5) << index
+                 << setw(55) << curr->text
+                 << setw(15) << curr->count << endl;
+    
             if (mostRepeated == nullptr || curr->count > mostRepeated->count) 
             {
                 mostRepeated = curr;
             }
         }
-
+    
         if (mostRepeated != nullptr) 
         {
-            cout << "\nMost repeated \"" << field << "\":\n\""
-                << mostRepeated->text
-                << "\" repeated "
-                << mostRepeated->count
-                << " time(s)." << endl;
+            cout << "\nMost Frequent '" << field << "': \"" << mostRepeated->text
+                 << "\" occurred " << mostRepeated->count << " time(s)." << endl;
         }
     }
+    
 };

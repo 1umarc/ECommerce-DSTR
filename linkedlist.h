@@ -37,8 +37,16 @@ public:
         clearList(reviewHead, reviewSize);
         clearList(transactionHead, transactionSize);
         clearList(bothHead, bothSize);
-    }   
+    }
 
+    void delLinkedList() 
+    {
+        clearList(customerHead, customerSize);
+        clearList(reviewHead, reviewSize);
+        clearList(transactionHead, transactionSize);
+        clearList(bothHead, bothSize);
+    }
+       
     template<typename Node>
     void clearList(Node*& delNode, int& size) 
     {

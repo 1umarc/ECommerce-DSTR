@@ -83,16 +83,29 @@ private:
         if (condition)
         {
             // second value is later, or bigger
-            result = first;
-            result->next = merge(first->next, second);
+            result = second;
+            result->next = merge(first, second->next);
         }
         else
         {
             // first value is later, or bigger
-            result = second;
-            result->next = merge(first, second->next);
+            result = first;
+            result->next = merge(first->next, second);
         }
         return result;
+    }
+
+    void insertionSort()
+    {
+            
+    }
+    void bubbleSort()
+    {
+
+    }
+    void selectionSort()
+    {
+
     }
 };
 
@@ -194,6 +207,19 @@ private:
        delete[] leftArr;
        delete[] rightArr;
    }
+
+    void insertionSort()
+    {
+
+    }
+    void heapSort()
+    {
+
+    }
+    void quickSort()
+    {
+
+    }
 };
 
 
@@ -269,6 +295,19 @@ public:
         }       
         return size;
     }
+
+    void linearSearch()
+    {
+
+    }
+    void recursiveSearch()
+    {
+
+    }
+    void sentinelSearch()
+    {
+
+    }
 };
 
 class Array_Search
@@ -319,9 +358,9 @@ public:
             if (match)
             {
                 // Write matching elements
-                if (writeInd != writeInd)
+                if (writeInd != readInd)
                 {
-                    bucket.data[writeInd] = bucket.data[writeInd];
+                    bucket.data[writeInd] = bucket.data[readInd];
                 }
                 size++;     // Increment size for matching element
                 writeInd++; // Move write index forward
@@ -330,5 +369,18 @@ public:
         }  
         bucket.size = size;   
         return size;
+    }
+
+    void linearSearch()
+    {
+
+    }
+    void binarySearch()
+    {
+
+    }
+    void jumpSearch()
+    {
+
     }
 };
