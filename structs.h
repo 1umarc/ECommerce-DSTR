@@ -7,8 +7,8 @@ using namespace std;
 // LinkedList & Array - Review
 struct Review 
 {
-    string customerID;
     string productID;
+    string customerID;
     int rating;
     string reviewText;
     Review* next;

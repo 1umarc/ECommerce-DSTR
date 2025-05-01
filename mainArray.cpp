@@ -1,4 +1,4 @@
-#include "algorithms_lm.h"
+#include "algorithms.h"
 
 using namespace std;
 
@@ -6,9 +6,10 @@ int main()
 {
     Array a;
 
-    string reviewFile = "reviews_lecturer.csv";
-    string transactionFile = "transactions_lecturer.csv";
+    string reviewFile = "reviewsCleaned.csv";
+    string transactionFile = "transactionsCleaned.csv";
 
+    a.initializeBuckets(reviewFile, transactionFile);
     a.customerArray(reviewFile, transactionFile);
     a.reviewArray(reviewFile);
     a.transaction_bothArray(transactionFile);
@@ -22,21 +23,22 @@ int main()
     Helper h;
 
     // Q1 - use all sort algorithm
-    aso.mergeSort(a.both);
-    //a.displayBoth();
-    h.frequencyArray(a.both, "date"); // END: just to display the total number by date
+    aso.heapSort(a.both);  
+    FrequencyBucket frequencies = h.frequencyArray(a.both.data, "date", "Both", a.both.size);
+    h.displayFrequencyA(frequencies, "date");
     
     // Q2 - use all of search algorithm
-    int transSize = ase.sequentialSearch(a.transactions, "category", "Electronics", "paymentMethod", "Credit Card");
-    cout << "Size: " << transSize << endl;
-    double num = h.calculatePercentage(transSize, a.transactions.size); //END: just to display percentage
+    double transactionSize = a.transactions.size;
+    int filteredSize = ase.jumpSearch(a.transactions, "category", "Electronics", "paymentMethod", "Credit Card");
+    cout << "Filtered Size: " << filteredSize << endl;
+    double num = h.calculatePercentage(filteredSize, transactionSize); //END: just to display percentage
     cout << num << "%" << endl;
 
     // Q3 - use all sort + search algorithm;
-    int reviewSize = ase.sequentialSearch(a.reviews, "rating", "1");
-    cout << "Size: " << reviewSize << endl;
-    Bucket<Frequency> frequencies = h.frequencyArray(a.reviews, "reviewText"); // BETWEEN: returns a frequency array, to be sorted by u
-    aso.mergeSort(frequencies);
+    int reviewSize = ase.jumpSearch(a.reviews, "rating", "1");
+    cout << "Filtered Size: " << reviewSize << endl;
+    FrequencyBucket frequencies = h.frequencyArray(a.reviews.data, "reviewText", "Review", reviewSize); // BETWEEN: returns a frequency array, to be sorted by u
+    aso.insertionSort(frequencies);
     h.displayFrequencyA(frequencies, "reviewText");
 
     return 0;

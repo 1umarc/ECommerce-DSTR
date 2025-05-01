@@ -1,10 +1,17 @@
-#include "algorithms_lm.h"
+#include "algorithms.h"
 #include <chrono>
 #include <iomanip>
 #include <iostream>
 
 using namespace std;
 using namespace std::chrono;
+
+/* TO DO: 
+seq search diff
+- add function prototypes
+- FIX TEMPLATE for others
+- touchup main
+*/
 
 void displayMenu() 
 {
@@ -58,7 +65,7 @@ void displayLinkedListSearchMenu()
     cout << "Enter your choice: ";
 }
 
-void displayCombinedMenu(bool isArray) 
+void displayBothMenu(bool isArray) 
 {
     cout << "Select Combined Algorithm for Question 3:" << endl;
     cout << "Sort Algorithm:" << endl;
@@ -66,14 +73,14 @@ void displayCombinedMenu(bool isArray)
     {
         cout << "1. Merge Sort (Luven)" << endl;
         cout << "2. Insertion Sort (Chun Kit)" << endl;
-        cout << "3. Bubble Sort (Nesya)" << endl;
-        cout << "4. Selection Sort (Xiao Wen)" << endl;
+        cout << "3. Heap Sort (Nesya)" << endl;
+        cout << "4. Quick Sort (Xiao Wen)" << endl;
     } else 
     {
         cout << "1. Merge Sort (Luven)" << endl;
         cout << "2. Insertion Sort (Chun Kit)" << endl;
-        cout << "3. Heap Sort (Nesya)" << endl;
-        cout << "4. Quick Sort (Xiao Wen)" << endl;
+        cout << "3. Bubble Sort (Nesya)" << endl;
+        cout << "4. Selection Sort (Xiao Wen)" << endl;
     }
     cout << "Enter your choice for sort: ";
 }
@@ -85,14 +92,15 @@ void displaySearchChoiceMenu(bool isArray)
     {
         cout << "1. Sequential Search (Luven)" << endl;
         cout << "2. Linear Search (Chun Kit)" << endl;
-        cout << "3. Recursive Search (Nesya)" << endl;
-        cout << "4. Sentinel Search (Xiao Wen)" << endl;
-    } else 
+        cout << "3. Binary Search (Nesya)" << endl;
+        cout << "4. Jump Search (Xiao Wen)" << endl;
+    } 
+    else 
     {
         cout << "1. Sequential Search (Luven)" << endl;
         cout << "2. Linear Search (Chun Kit)" << endl;
-        cout << "3. Binary Search (Nesya)" << endl;
-        cout << "4. Jump Search (Xiao Wen)" << endl;
+        cout << "3. Recursive Search (Nesya)" << endl;
+        cout << "4. Sentinel Search (Xiao Wen)" << endl;
     }
     cout << "Enter your choice for search: ";
 }
@@ -102,8 +110,8 @@ void displayQuestionsMenu()
     cout << "\nSelect Question to Solve:" << endl;
     cout << "1. Q1: Sort customer transactions by date using both datasets, and display total number of both transactions." << endl;
     cout << "2. Q2: Calculate percentage of Electronics purchases made using Credit Card." << endl;
-    cout << "3. Q3: Find most frequently used set-of-words in 1-star reviews" << endl;
-    cout << "4 - Extra: Display Selected Dataset" << endl;
+    cout << "3. Q3: Find most frequently used set-of-words in 1-star reviews." << endl;
+    cout << "4 - Extra: Display Selected Dataset." << endl;
     cout << "0 - Return" << endl;
     cout << "Enter your choice: ";
 }
@@ -113,11 +121,12 @@ void loadArray(Array& a)
 {
     a.delArray();
 
-    string reviewFile = "reviews_lecturer.csv";
-    string transactionFile = "transactions_lecturer.csv";
+    string reviewFile = "reviewsCleaned.csv";
+    string transactionFile = "transactionsCleaned.csv";
 
     // Load data
     cout << "\nLoading data into Array structures..." << endl;
+    a.initializeBuckets(reviewFile, transactionFile);
     a.customerArray(reviewFile, transactionFile);
     a.reviewArray(reviewFile);
     a.transaction_bothArray(transactionFile);
@@ -128,8 +137,8 @@ void loadLinkedList(LinkedList& ll)
 {
     ll.delLinkedList();
 
-    string reviewFile = "reviews_lecturer.csv";
-    string transactionFile = "transactions_lecturer.csv";
+    string reviewFile = "reviewsCleaned.csv";
+    string transactionFile = "transactionsCleaned.csv";
     
     // Load data
     cout << "\nLoading data into Linked List structures..." << endl;
@@ -145,10 +154,10 @@ void displayArrayDataMenu(Array& a)
     int choice = -1;
 
     do {
-        cout << "\n=== Array Data Display Menu ===" << endl;
+        cout << "====================== Array Data Display Menu ======================" << endl;
         cout << "1. Display Transactions" << endl;
         cout << "2. Display Reviews" << endl;
-        cout << "3. Display Combined (Both)" << endl;
+        cout << "3. Display Both (Transactions + Review)" << endl;
         cout << "0. Return" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
@@ -170,10 +179,10 @@ void displayLinkedListDataMenu(LinkedList& ll)
     int choice = -1;
 
     do {
-        cout << "\n=== Linked List Data Display Menu ===" << endl;
+        cout << "\n====================== Linked List Display Menu ======================" << endl;
         cout << "1. Display Transactions" << endl;
         cout << "2. Display Reviews" << endl;
-        cout << "3. Display Combined (Both)" << endl;
+        cout << "3. Display Both (Transactions + Review)" << endl;
         cout << "0. Return" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
@@ -205,17 +214,17 @@ void solveQ1_Array(Array& a, Array_Sort& aso, Helper& h, int sortChoice)
         case 2:
             sortName = "Insertion Sort";
             cout << "\nUsing Insertion Sort..." << endl;
-            //aso.insertionSort(a.both);
+            aso.insertionSort(a.both);
             break;
         case 3:
-            sortName = "Bubble Sort";
-            cout << "\nUsing Bubble Sort..." << endl;
-            //aso.bubbleSort(a.both);
+            sortName = "Heap Sort";
+            cout << "\nUsing Heap Sort..." << endl;
+            aso.heapSort(a.both);
             break;
         case 4:
-            sortName = "Selection Sort";
-            cout << "\nUsing Selection Sort..." << endl;
-            //aso.selectionSort(a.both);
+            sortName = "Quick Sort";
+            cout << "\nUsing Quick Sort..." << endl;
+            aso.quickSort(a.both);
             break;
     }
 
@@ -223,7 +232,7 @@ void solveQ1_Array(Array& a, Array_Sort& aso, Helper& h, int sortChoice)
     auto duration = duration_cast<nanoseconds>(end - start);
     
     // Display results
-    Bucket<Frequency> frequencies = h.frequencyArray(a.both, "date");
+    FrequencyBucket frequencies = h.frequencyArray(a.both.data, "date", "Both", a.both.size);
     cout << "\n====================== Q1 Results - Array ======================" << endl;
     h.displayFrequencyA(frequencies, "date");
     cout << "Number of Both (Transaction + Review): " << a.both.size << endl;
@@ -249,17 +258,17 @@ void solveQ2_Array(Array& a, Array_Search& ase, Helper& h, int searchChoice)
         case 2:
             searchName = "Linear Search";
             cout << "\nUsing Linear Search..." << endl;
-            //filteredSize = ase.linearSearch(a.transactions, "category", "Electronics", "paymentMethod", "Credit Card");
+            filteredSize = ase.linearSearch(a.transactions, "category", "Electronics", "paymentMethod", "Credit Card");
             break;
         case 3:
-            searchName = "Recursive Search";
-            cout << "\nUsing Recursive Search..." << endl;
-            //filteredSize = ase.recursiveSearch(a.transactions, "category", "Electronics", "paymentMethod", "Credit Card");
+            searchName = "Binary Search";
+            cout << "\nUsing Binary Search..." << endl;
+            filteredSize = ase.binarySearch(a.transactions, "category", "Electronics", "paymentMethod", "Credit Card");
             break;
         case 4:
-            searchName = "Sentinel Search";
-            cout << "\nUsing Sentinel Search..." << endl;
-            //filteredSize = ase.sentinelSearch(a.transactions, "category", "Electronics", "paymentMethod", "Credit Card");
+            searchName = "Jump Search";
+            cout << "\nUsing Jump Search..." << endl;
+            filteredSize = ase.jumpSearch(a.transactions, "category", "Electronics", "paymentMethod", "Credit Card");
             break;
     }
     
@@ -295,22 +304,22 @@ void solveQ3_Array(Array& a, Array_Sort& aso, Array_Search& ase, Helper& h, int 
         case 2:
             searchName = "Linear Search";
             cout << "\nUsing Linear Search for 1-star reviews..." << endl;
-            //reviewSize = ase.linearSearch(a.reviews, "rating", "1");
+            reviewSize = ase.linearSearch(a.reviews, "rating", "1");
             break;
         case 3:
-            searchName = "Recursive Search";
-            cout << "\nUsing Recursive Search for 1-star reviews..." << endl;
-            //reviewSize = ase.recursiveSearch(a.reviews, "rating", "1");
+            searchName = "Binary Search";
+            cout << "\nUsing Binary Search for 1-star reviews..." << endl;
+            reviewSize = ase.binarySearch(a.reviews, "rating", "1");
             break;
         case 4:
-            searchName = "Sentinel Search";
-            cout << "\nUsing Sentinel Search for 1-star reviews..." << endl;
-            //reviewSize = ase.sentinelSearch(a.reviews, "rating", "1");
+            searchName = "Jump Search";
+            cout << "\nUsing Jump Search for 1-star reviews..." << endl;
+            reviewSize = ase.jumpSearch(a.reviews, "rating", "1");
             break;
     }
     
     // Get word frequency
-    Bucket<Frequency> frequencies = h.frequencyArray(a.reviews, "reviewText");
+    FrequencyBucket frequencies = h.frequencyArray(a.reviews.data, "reviewText", "Review", reviewSize);
     
     // Sort by frequency
     switch (sortChoice) 
@@ -323,17 +332,17 @@ void solveQ3_Array(Array& a, Array_Sort& aso, Array_Search& ase, Helper& h, int 
         case 2:
             sortName = "Insertion Sort";
             cout << "Using Insertion Sort for word frequencies..." << endl;
-            //aso.insertionSort(frequencies);
+            aso.insertionSort(frequencies);
             break;
         case 3:
-            sortName = "Bubble Sort";
-            cout << "Using Bubble Sort for word frequencies..." << endl;
-            //aso.bubbleSort(frequencies);
+            sortName = "Heap Sort";
+            cout << "Using Heap Sort for word frequencies..." << endl;
+            aso.heapSort(frequencies);
             break;
         case 4:
-            sortName = "Selection Sort";
-            cout << "Using Selection Sort for word frequencies..." << endl;
-            //aso.selectionSort(frequencies);
+            sortName = "Quick Sort";
+            cout << "Using Quick Sort for word frequencies..." << endl;
+            aso.quickSort(frequencies);
             break;
     }
     
@@ -365,17 +374,17 @@ void solveQ1_LinkedList(LinkedList& ll, LinkedList_Sort& llso, Helper& h, int so
         case 2:
             sortName = "Insertion Sort";
             cout << "\nUsing Insertion Sort..." << endl;
-            //llso.insertionSort(ll.bothHead);
+            llso.insertionSort(ll.bothHead);
             break;
         case 3:
-            sortName = "Heap Sort";
-            cout << "\nUsing Heap Sort..." << endl;
-            //llso.heapSort(ll.bothHead);
+            sortName = "Bubble Sort";
+            cout << "\nUsing Bubble Sort..." << endl;
+            llso.bubbleSort(ll.bothHead);
             break;
         case 4:
-            sortName = "Quick Sort";
-            cout << "\nUsing Quick Sort..." << endl;
-            //llso.quickSort(ll.bothHead);
+            sortName = "Selection Sort";
+            cout << "\nUsing Selection Sort..." << endl;
+            llso.selectionSort(ll.bothHead);
             break;
     }
     
@@ -383,7 +392,7 @@ void solveQ1_LinkedList(LinkedList& ll, LinkedList_Sort& llso, Helper& h, int so
     auto duration = duration_cast<nanoseconds>(end - start);;
     
     // Display results
-    Frequency* freqHead = h.frequencyLinkedList(ll.bothHead, "date");
+    Frequency* freqHead = h.frequencyLinkedList(ll.bothHead, "date", "Both");
     cout << "\n====================== Q1 Results - Linked List ======================" << endl;
     h.displayFrequencyLL(freqHead, "date");
     cout << "Number of Both (Transaction + Review): " << ll.bothSize << endl;
@@ -402,22 +411,22 @@ void solveQ2_LinkedList(LinkedList& ll, LinkedList_Search& llse, Helper& h, int 
         case 1:
             searchName = "Sequential Search";
             cout << "\nUsing Sequential Search..." << endl;
-            filteredSize = llse.sequentialSearch(ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
+            ll.transactionHead = llse.sequentialSearch(&filteredSize, ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
             break;
         case 2:
             searchName = "Linear Search";
             cout << "\nUsing Linear Search..." << endl;
-            //filteredSize = llse.linearSearch(ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
+            ll.transactionHead = llse.linearSearch(&filteredSize, ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
             break;
         case 3:
-            searchName = "Binary Search";
-            cout << "\nUsing Binary Search..." << endl;
-            //filteredSize = llse.binarySearch(ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
+            searchName = "Recursive Search";
+            cout << "\nUsing Recursive Search..." << endl;
+            ll.transactionHead = llse.recursiveSearch(&filteredSize, ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
             break;
         case 4:
-            searchName = "Jump Search";
-            cout << "\nUsing Jump Search..." << endl;
-            //filteredSize = llse.jumpSearch(ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
+            searchName = "Sentinel Search";
+            cout << "\nUsing Sentinel Search..." << endl;
+            ll.transactionHead = llse.sentinelSearch(&filteredSize, ll.transactionHead, "category", "Electronics", "paymentMethod", "Credit Card");
             break;
     }
     
@@ -448,27 +457,27 @@ void solveQ3_LinkedList(LinkedList& ll, LinkedList_Sort& llso, LinkedList_Search
         case 1:
             searchName = "Sequential Search";
             cout << "\nUsing Sequential Search for 1-star reviews..." << endl;
-            reviewSize = llse.sequentialSearch(ll.reviewHead, "rating", "1");
+            ll.reviewHead = llse.sequentialSearch(&reviewSize, ll.reviewHead, "rating", "1");
             break;
         case 2:
             searchName = "Linear Search";
             cout << "\nUsing Linear Search for 1-star reviews..." << endl;
-            //reviewSize = llse.linearSearch(ll.reviewHead, "rating", "1");
+            ll.reviewHead = llse.linearSearch(&reviewSize, ll.reviewHead, "rating", "1");
             break;
         case 3:
-            searchName = "Binary Search";
-            cout << "\nUsing Binary Search for 1-star reviews..." << endl;
-            //reviewSize = llse.binarySearch(ll.reviewHead, "rating", "1");
+            searchName = "Recursive Search";
+            cout << "\nUsing Recursive Search for 1-star reviews..." << endl;
+            ll.reviewHead = llse.recursiveSearch(&reviewSize, ll.reviewHead, "rating", "1");
             break;
         case 4:
-            searchName = "Jump Search";
-            cout << "\nUsing Jump Search for 1-star reviews..." << endl;
-            //reviewSize = llse.jumpSearch(ll.reviewHead, "rating", "1");
+            searchName = "Sentinel Search";
+            cout << "\nUsing Sentinel Search for 1-star reviews..." << endl;
+            ll.reviewHead = llse.sentinelSearch(&reviewSize, ll.reviewHead, "rating", "1");
             break;
     }
     
     // Get word frequency
-    Frequency* freqHead = h.frequencyLinkedList(ll.reviewHead, "reviewText");
+    Frequency* freqHead = h.frequencyLinkedList(ll.reviewHead, "reviewText", "Review");
     
     // Sort by frequency
     switch (sortChoice) 
@@ -481,17 +490,17 @@ void solveQ3_LinkedList(LinkedList& ll, LinkedList_Sort& llso, LinkedList_Search
         case 2:
             sortName = "Insertion Sort";
             cout << "Using Insertion Sort for word frequencies..." << endl;
-            //llso.insertionSort(freqHead);
+            llso.insertionSort(freqHead);
             break;
         case 3:
-            sortName = "Heap Sort";
-            cout << "Using Heap Sort for word frequencies..." << endl;
-            //llso.heapSort(freqHead);
+            sortName = "Bubble Sort";
+            cout << "Using Bubble Sort for word frequencies..." << endl;
+            llso.bubbleSort(freqHead);
             break;
         case 4:
-            sortName = "Quick Sort";
+            sortName = "Selection Sort";
             cout << "Using Quick Sort for word frequencies..." << endl;
-            //llso.quickSort(freqHead);
+            llso.selectionSort(freqHead);
             break;
     }
     
@@ -546,9 +555,9 @@ int main()
                         break;
                     }
                     case 3: 
-                    {  // Q3 - Combined
+                    {  // Q3 - Both
                         int sortChoice, searchChoice;
-                        displayCombinedMenu(true);
+                        displayBothMenu(true);
                         cin >> sortChoice;
                         displaySearchChoiceMenu(true);
                         cin >> searchChoice;
@@ -606,9 +615,9 @@ int main()
                         break;
                     }
                     case 3: 
-                    {  // Q3 - Combined
+                    {  // Q3 - Both
                         int sortChoice, searchChoice;
-                        displayCombinedMenu(false);
+                        displayBothMenu(false);
                         cin >> sortChoice;
                         displaySearchChoiceMenu(false);
                         cin >> searchChoice;
