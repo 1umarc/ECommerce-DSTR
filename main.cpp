@@ -1,4 +1,7 @@
-#include "algorithms.h"
+#include "linkedlist_sort.h"
+#include "linkedlist_search.h"
+#include "array_sort.h"
+#include "array_search.h"
 #include <chrono>
 #include <iomanip>
 #include <iostream>
