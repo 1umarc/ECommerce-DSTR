@@ -299,83 +299,73 @@ class LinkedList_SearchDN
     }
 };
 
-class Array_SearchDN
-{
+class Array_SearchDN {
+    private:
+        // Helper function to get string field value from Transaction or Review by field name
+        template<typename DataType>
+        string getFieldValue(const DataType& obj, const string& fieldName) {
+            if constexpr (std::is_same<DataType, Transaction>::value) {
+                if (fieldName == "category") return obj.category;
+                else if (fieldName == "paymentMethod") return obj.paymentMethod;
+            } else if constexpr (std::is_same<DataType, Review>::value) {
+                if (fieldName == "rating") return to_string(obj.rating);
+                else if (fieldName == "reviewText") return obj.reviewText;
+            }
+            return "";
+        }
+    
+        // Binary search on array of DataType for fieldName == value
+        template<typename DataType>
+        int binarySearchField(DataType* arr, int size, const string& fieldName, const string& value) {
+            int first = 0;
+            int last = size - 1;
+    
+            while (first <= last) {
+                int mid = first + (last - first) / 2;
+                string midVal = getFieldValue(arr[mid], fieldName);
+    
+                if (midVal == value) {
+                    return mid;
+                } else if (midVal < value) {
+                    first = mid + 1;
+                } else {
+                    last = mid - 1;
+                }
+            }
+            return -1;
+        }
+    
     public:
-    template <typename DataType>
-    int binarySearch(Bucket<DataType>& bucket, const string& field1, const string& value1, 
-                const string& field2 = "", const string& value2 = "") {
-        int count = 0;
-        
-        for (int i = 0; i < bucket.size; i++) {
-            bool match1 = false;
-            bool match2 = true; // Default to true when field2 is empty
-            
-            if constexpr (std::is_same<DataType, Transaction>::value) {
-                if (field1 == "category") match1 = (bucket.data[i].category == value1);
-                else if (field1 == "paymentMethod") match1 = (bucket.data[i].paymentMethod == value1);
+        template <typename DataType>
+        int binarySearch(Bucket<DataType>& bucket, const string& field1, const string& value1,
+                         const string& field2 = "", const string& value2 = "") {
+            if (bucket.size == 0) return 0;
+    
+            int idx = binarySearchField(bucket.data, bucket.size, field1, value1);
+            if (idx == -1) return 0;
+    
+            // We found one match; count all matches by scanning neighbors for duplicates on field1
+            int count = 0;
+    
+            // Scan left
+            int i = idx;
+            while (i >= 0 && getFieldValue(bucket.data[i], field1) == value1) {
+                i--;
             }
-            else if constexpr (std::is_same<DataType, Review>::value) {
-                if (field1 == "rating") match1 = (to_string(bucket.data[i].rating) == value1);
-                else if (field1 == "reviewText") match1 = (bucket.data[i].reviewText == value1);
-            }
-
-            if (match1 && !field2.empty()) {
-                match2 = false; // Reset to false as we need to check field2
-                
-                if constexpr (std::is_same<DataType, Transaction>::value) {
-                    if (field2 == "category") match2 = (bucket.data[i].category == value2);
-                    else if (field2 == "paymentMethod") match2 = (bucket.data[i].paymentMethod == value2);
+            i++; // adjust to first match on left
+    
+            // Scan right and count with checking field2 if provided
+            while (i < bucket.size && getFieldValue(bucket.data[i], field1) == value1) {
+                bool match2 = true;
+                if (!field2.empty()) {
+                    match2 = (getFieldValue(bucket.data[i], field2) == value2);
                 }
-                else if constexpr (std::is_same<DataType, Review>::value) {
-                    if (field2 == "rating") match2 = (to_string(bucket.data[i].rating) == value2);
-                    else if (field2 == "reviewText") match2 = (bucket.data[i].reviewText == value2);
+                if (match2) {
+                    count++;
                 }
+                i++;
             }
-            if (match1 && match2) {
-                count++;
-            }
+    
+            return count;
         }
-        
-        return count;
-    }
-
-    // Binary search method for a sorted bucket on a specific field
-    template <typename DataType>
-    int binarySearchBucket(Bucket<DataType>& bucket, const string& field, const string& value, int first, int last) {
-        // Only proceed if the bucket is sorted on the specified field
-        while (first <= last) {
-            int mid = first + (last - first) / 2;
-            
-            string fieldValue;
-            
-            // Extract the field value based on the data type
-            if constexpr (std::is_same<DataType, Transaction>::value) {
-                if (field == "category") fieldValue = bucket.data[mid].category;
-                else if (field == "paymentMethod") fieldValue = bucket.data[mid].paymentMethod;
-                else return -1; // Field not supported
-            }
-            else if constexpr (std::is_same<DataType, Review>::value) {
-                if (field == "rating") fieldValue = to_string(bucket.data[mid].rating);
-                else if (field == "reviewText") fieldValue = bucket.data[mid].reviewText;
-                else return -1; // Field not supported
-            }
-            else {
-                return -1; // Data type not supported
-            }
-            
-            // Compare and adjust search boundaries
-            if (value == fieldValue) {
-                return mid; // Found the value
-            }
-            else if (value > fieldValue) {
-                first = mid + 1; // Value is in the right half
-            }
-            else {
-                last = mid - 1; // Value is in the left half
-            }
-        }
-        
-        return -1; // Value not found
-    }
-};
+    };
