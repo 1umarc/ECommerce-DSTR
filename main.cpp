@@ -6,12 +6,26 @@
 using namespace std;
 using namespace std::chrono;
 
-/* TO DO: 
-seq search diff
-- add function prototypes
-- FIX TEMPLATE for others
-- touchup main
-*/
+// ----------- Function Prototypes ----------
+void displayMenu();
+void displayArraySortMenu();
+void displayArraySearchMenu();
+void displayLinkedListSortMenu();
+void displayLinkedListSearchMenu();
+void displayBothMenu(bool);
+void displaySearchChoiceMenu(bool);
+void displayQuestionsMenu();
+void loadArray(Array&);
+void loadLinkedList(LinkedList&);
+void displayArrayDataMenu(Array&);
+void displayLinkedListDataMenu(LinkedList&);
+void solveQ1_Array(Array&, Array_Sort&, Helper&, int);
+void solveQ2_Array(Array&, Array_Search&, Helper&, int);
+void solveQ3_Array(Array&, Array_Sort&, Array_Search&, Helper&, int, int);
+void solveQ1_LinkedList(LinkedList&, LinkedList_Sort&, Helper&, int);
+void solveQ2_LinkedList(LinkedList&, LinkedList_Search&, Helper&, int);
+void solveQ3_LinkedList(LinkedList&, LinkedList_Sort&, LinkedList_Search&, Helper&, int, int);
+// ------------------------------------------
 
 void displayMenu() 
 {
@@ -30,8 +44,8 @@ void displayArraySortMenu()
     cout << "Select Sort Algorithm for Question 1:" << endl;
     cout << "1. Merge Sort (Luven)" << endl;
     cout << "2. Insertion Sort (Chun Kit)" << endl;
-    cout << "3. Bubble Sort (Nesya)" << endl;
-    cout << "4. Selection Sort (Xiao Wen)" << endl;
+    cout << "3. Heap Sort (Nesya)" << endl;
+    cout << "4. Quick Sort (Xiao Wen)" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -40,8 +54,8 @@ void displayArraySearchMenu()
     cout << "Select Search Algorithm for Question 2:" << endl;
     cout << "1. Sequential Search (Luven)" << endl;
     cout << "2. Linear Search (Chun Kit)" << endl;
-    cout << "3. Recursive Search (Nesya)" << endl;
-    cout << "4. Sentinel Search (Xiao Wen)" << endl;
+    cout << "3. Binary Search (Nesya)" << endl;
+    cout << "4. Jump Search (Xiao Wen)" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -50,8 +64,8 @@ void displayLinkedListSortMenu()
     cout << "Select Sort Algorithm for Question 1:" << endl;
     cout << "1. Merge Sort (Luven)" << endl;
     cout << "2. Insertion Sort (Chun Kit)" << endl;
-    cout << "3. Heap Sort (Nesya)" << endl;
-    cout << "4. Quick Sort (Xiao Wen)" << endl;
+    cout << "3. Bubble Sort (Nesya)" << endl;
+    cout << "4. Selection Sort (Xiao Wen)" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -60,8 +74,8 @@ void displayLinkedListSearchMenu()
     cout << "Select Search Algorithm for Question 2:" << endl;
     cout << "1. Sequential Search (Luven)" << endl;
     cout << "2. Linear Search (Chun Kit)" << endl;
-    cout << "3. Binary Search (Nesya)" << endl;
-    cout << "4. Jump Search (Xiao Wen)" << endl;
+    cout << "3. Recursive Search (Nesya)" << endl;
+    cout << "4. Sentinel Search (Xiao Wen)" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -153,7 +167,8 @@ void displayArrayDataMenu(Array& a)
     loadArray(a);  // Ensure fresh data is loaded
     int choice = -1;
 
-    do {
+    do 
+    {
         cout << "====================== Array Data Display Menu ======================" << endl;
         cout << "1. Display Transactions" << endl;
         cout << "2. Display Reviews" << endl;
@@ -162,7 +177,8 @@ void displayArrayDataMenu(Array& a)
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice) {
+        switch (choice) 
+        {
             case 1: a.displayTransactions(); break;
             case 2: a.displayReviews(); break;
             case 3: a.displayBoth(); break;
@@ -187,7 +203,8 @@ void displayLinkedListDataMenu(LinkedList& ll)
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice) {
+        switch (choice) 
+        {
             case 1: ll.displayTransactions(); break;
             case 2: ll.displayReviews(); break;
             case 3: ll.displayBoth(); break;
@@ -205,7 +222,8 @@ void solveQ1_Array(Array& a, Array_Sort& aso, Helper& h, int sortChoice)
     loadArray(a);
     string sortName;
 
-    switch (sortChoice) {
+    switch (sortChoice) 
+    {
         case 1:
             sortName = "Merge Sort";
             cout << "\nUsing Merge Sort..." << endl;
@@ -521,7 +539,7 @@ int main()
     
     do 
     {
-        system("cls");  // Clear screen (Windows)
+        system("cls");  // Clear screen
         displayMenu();
         cin >> mainChoice;
         
