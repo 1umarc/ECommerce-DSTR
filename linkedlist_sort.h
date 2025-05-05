@@ -26,7 +26,7 @@ public:
 
 /* Merge Sort Implementation - Linked List
 - Time Complexity: O(n log n)
-- Space Complexity: O(n)
+- Space Complexity: O(log n)
 */
 void LinkedList_Sort::mergeSort(Both*& head)
 {
@@ -164,7 +164,7 @@ Frequency* LinkedList_Sort::merge(Frequency* first, Frequency* second)
 }
 
 /* Insertion Sort Implementation - Linked List
-- Time Complexity: O(n) [Best Case], O(n²) [Average & Worst Case]
+- Time Complexity: O(n) [Best Case], O(n²) [Worst Case]
 - Space Complexity: O(1)
 */
 void LinkedList_Sort::insertionSort(Both*& head)
@@ -249,7 +249,7 @@ void LinkedList_Sort::insertionSort(Frequency*& head)
 }
 
 /* Bubble Sort Implementation - Linked List
-- Time Complexity: O(n) [Best Case], O(n²) [Average & Worst Case]
+- Time Complexity: O(n²)
 - Space Complexity: O(1)
 */  
 void LinkedList_Sort::bubbleSort(Both*& head)
@@ -314,7 +314,7 @@ void LinkedList_Sort::bubbleSort(Frequency*& head)
 }
 
 /* Selection Sort Implementation - Linked List
-- Time Complexity: O(n) [Best Case], O(n²) [Average & Worst Case]
+- Time Complexity: O(n²)
 - Space Complexity: O(1)
 */
 void LinkedList_Sort::selectionSort(Both*& head)

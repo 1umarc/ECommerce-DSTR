@@ -176,27 +176,42 @@ void Array_Sort::merge(Frequency* arr, int left, int mid, int right)
 }
 
 /* Insertion Sort Implementation - Array
-- Time Complexity: O(n) [Best Case], O(n²) [Average & Worst Case]
+- Time Complexity: O(n) [Best Case], O(n²) [Worst Case]
 - Space Complexity: O(1)
 */
-void Array_Sort::insertionSort(BothBucket& bucket)
+void Array_Sort::insertionSort(BothBucket& bucket) 
 {
     int n = bucket.size;
+    if (n <= 1)
+    {
+        return;  // Array is already sorted or empty
+    }
     
-    for (int i = 1; i < n; i++)
+    // Temporary array to store comparison results
+    bool* isNewer = new bool[n];
+    
+    for (int i = 1; i < n; i++) 
     {
         Both key = bucket.data[i];
         int j = i - 1;
         
-        // Compare based on type, for Both elements, compare by date
-        while (j >= 0 && !Helper::compareDate(key.date, bucket.data[j].date))
+        // Cache comparison results for adjacent elements
+        while (j >= 0) 
         {
+            if (!isNewer[j]) 
+            {  // If not cached
+                isNewer[j] = Helper::compareDate(bucket.data[j].date, key.date);
+            }
+            if (isNewer[j]) break;
+            
             bucket.data[j + 1] = bucket.data[j];
             j--;
         }
         
         bucket.data[j + 1] = key;
     }
+    
+    delete[] isNewer;
 }
 void Array_Sort::insertionSort(FrequencyBucket& bucket)
 {
@@ -219,7 +234,7 @@ void Array_Sort::insertionSort(FrequencyBucket& bucket)
 }
 
 /* Heap Sort Implementation - Array
-- Time Complexity: O(n) [Best Case], O(n*log(n)) [Average & Worst Case]
+- Time Complexity: O(n log(n))
 - Space Complexity: O(1)
 */
 void Array_Sort::heapSort(BothBucket& bucket) 
@@ -302,8 +317,8 @@ void Array_Sort::heapify(FrequencyBucket& bucket, int size, int i)
 }
 
 /* Quick Sort Implementation - Array
-- Time Complexity: O(n*log(n)) [Best Case], O(n*log(n)) [Average & Worst Case]
-- Space Complexity: O(log(n))
+- Time Complexity: O(n*log(n)) [Best Case], O(n²) [Worst Case]
+- Space Complexity: O(log(n)) [Best Case], O(n) [Worst Case]
 */    
 void Array_Sort::quickSort(BothBucket& bucket)
 {

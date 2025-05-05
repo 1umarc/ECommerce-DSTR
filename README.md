@@ -1,8 +1,9 @@
 # ECommerce-DSTR
-let's go
 
-yess
+E-COMMERCE CUSTOMER BEHAVIOUR ANALYZER by Group 9
 
-AMAZING!! Hi My dear lecturer
-
-Wlsm my brother in Christ
+Team Members:
+1. Luven Mark
+2. Chong Chun Kit
+3. Nesya Dinasarah
+4. Chan Xiao Wen

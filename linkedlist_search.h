@@ -22,7 +22,7 @@ public:
 };
 
 /* Sequential Search Implementation - Linked List
-- Time Complexity: O(1) [Best Case], O(n) [Average & Worst Case]
+- Time Complexity: O(1) [Best Case], O(n) [Worst Case]
 - Space Complexity: O(1)
 */
 Transaction* LinkedList_Search::sequentialSearch(int* sizePtr, Transaction* head, const string& field1, const string& text1, const string& field2, const string& text2)
@@ -201,8 +201,8 @@ Review* LinkedList_Search::linearSearch(int* sizePtr, Review* head, const string
 }
 
 /* Recursive Search Implementation - Linked List
-- Time Complexity: O(1) [Best Case], O(n) [Average & Worst Case]
-- Space Complexity: O(1)
+- Time Complexity: O(n)
+- Space Complexity: O(n)
 */
 Transaction* LinkedList_Search::recursiveSearch(int* sizePtr, Transaction* head, const string& field1, const string& text1, const string& field2, const string& text2)
 {
@@ -278,82 +278,184 @@ Review* LinkedList_Search::recursiveSearch(int* sizePtr, Review* head, const str
 }      
 
 /* Sentinel Search Implementation - Linked List
-- Time Complexity: O(n) [Best Case], O(n) [Average & Worst Case]
+- Time Complexity: O(n)
 - Space Complexity: O(1)
 */
-Transaction* LinkedList_Search::sentinelSearch(int* sizePtr, Transaction* head, const string& field1, const string& value1, const string& field2, const string& value2) 
+Transaction* LinkedList_Search::sentinelSearch(int* pointerSize, Transaction* head, const string& field1, const string& value1, const string& field2, const string& value2) 
 {
     int count = 0;
+    
+    // Handle empty list case
+    if (head == nullptr) 
+    {
+        *pointerSize = 0;
+        return nullptr;
+    }
+    
+    // Create a sentinel node at the end of the list
+    Transaction* sentinel = new Transaction();
+    
+    // Set sentinel fields to match search criteria
+    if (field1 == "category") 
+    {
+        sentinel->category = value1;
+    } else if (field1 == "paymentMethod") 
+    {
+        sentinel->paymentMethod = value1;
+    }
+    
+    if (!field2.empty()) 
+    {
+        if (field2 == "category") 
+        {
+            sentinel->category = value2;
+        } else if (field2 == "paymentMethod") 
+        {
+            sentinel->paymentMethod = value2;
+        }
+    }
+    
+    // Find the end of the list and attach sentinel
+    Transaction* last = head;
+    while (last->next != nullptr) 
+    {
+        last = last->next;
+    }
+    last->next = sentinel;
+    sentinel->next = nullptr;
+    
+    // Start the search
     Transaction* current = head;
-    Transaction* prev = nullptr; 
-
-    while (current != nullptr)
+    Transaction* prev = nullptr;
+    
+    // With sentinel, we can guarantee we'll eventually find a match
+    while (true) 
     {
         bool match1 = false;
         bool match2 = true;
 
         // Handle field1
-        if (field1 == "category")
+        if (field1 == "category") 
         {
             match1 = (current->category == value1);
-        }
-        else if (field1 == "paymentMethod")
+        } else if (field1 == "paymentMethod") 
         {
-            match1 = (current->paymentMethod == value2);
+            match1 = (current->paymentMethod == value1);
         }
 
         // Handle field2
-        if (match1 && !field2.empty())
+        if (match1 && !field2.empty()) 
         {
             match2 = false;
-            if (field2 == "category")
+            if (field2 == "category") 
             {
-                match2 = (current->category == value1);
-            }
-            else if (field2 == "paymentMethod")
+                match2 = (current->category == value2);
+            } else if (field2 == "paymentMethod") 
             {
                 match2 = (current->paymentMethod == value2);
             }
         }
 
-        if (match1 && match2)
+        // Check if we've reached the sentinel node
+        bool isSentinel = (current == sentinel);
+        
+        if (isSentinel) 
+        {
+            // Remove sentinel before returning
+            if (prev != nullptr) 
+            {
+                prev->next = nullptr;
+            } else 
+            {
+                head = nullptr; // List was only sentinel
+            }
+            delete sentinel;
+            break;
+        }
+
+        if (match1 && match2) 
         {
             count++;
             prev = current;
             current = current->next;
-        }
-        else
+        } else 
         {
             // If no match, remove the current node from the Linked List
             Transaction* temp = current;
             current = current->next;
-            if (prev != nullptr)
+            if (prev != nullptr) 
             {
                 prev->next = current;
-            }
-            else
+            } else 
             {
                 head = current;
             }
             delete temp;
         }
-    }          
-    *sizePtr = count;
+    }
+    *pointerSize = count;
     return head;
 }
-Review* LinkedList_Search::sentinelSearch(int* sizePtr, Review* head, const string& field1, const string& value1) 
+Review* LinkedList_Search::sentinelSearch(int* pointerSize, Review* head, const string& field1, const string& value1) 
 {
     int count = 0;
+    
+    // Handle empty list case
+    if (head == nullptr) 
+    {
+        *pointerSize = 0;
+        return nullptr;
+    }
+    
+    // Create a sentinel node
+    Review* sentinel = new Review();
+    
+    // Set sentinel fields to match search criteria
+    if (field1 == "rating") 
+    {
+        // Convert string to int for the rating field
+        sentinel->rating = stoi(value1);
+    }
+    
+    // Find the end of the list and attach sentinel
+    Review* last = head;
+    while (last->next != nullptr) 
+    {
+        last = last->next;
+    }
+    last->next = sentinel;
+    sentinel->next = nullptr;
+    
+    // Start the search
     Review* current = head;
-    Review* prev = nullptr; 
-
-    while (current != nullptr)
+    Review* prev = nullptr;
+    
+    // With sentinel, we can simplify our loop condition
+    while (true) 
     {
         bool match1 = false;
 
-        if (field1 == "rating")
+        if (field1 == "rating") 
         {
             match1 = (to_string(current->rating) == value1);
+        }
+        
+        // Check if we've reached the sentinel node
+        bool isSentinel = (current == sentinel);
+        
+        if (isSentinel) 
+        {
+            // Remove sentinel before returning
+            if (prev != nullptr) 
+            {
+                prev->next = nullptr;
+            } 
+            else 
+            {
+                head = nullptr; // List was only sentinel
+            }
+            delete sentinel;
+            break;
         }
     
         if (match1) 
@@ -361,23 +463,23 @@ Review* LinkedList_Search::sentinelSearch(int* sizePtr, Review* head, const stri
             count++;
             prev = current;
             current = current->next;
-        }
-        else
+        } 
+        else 
         {
             // If no match, remove the current node from the Linked List
             Review* temp = current;
             current = current->next;
-            if (prev != nullptr)
+            if (prev != nullptr) 
             {
                 prev->next = current;
-            }
-            else
+            } 
+            else 
             {
                 head = current;
             }
             delete temp;
         }
     }
-    *sizePtr = count;
+    *pointerSize = count;
     return head;
 }

@@ -145,11 +145,10 @@ int Array_Search::linearSearch(ReviewBucket& bucket, const string& field1, const
 {
     int count = 0;
     ReviewBucket filteredBucket;
+    filteredBucket.initialize(bucket.size); // Initialize with same capacity as original
     
     for (int i = 0; i < bucket.size; i++)
     {
-        bool condition1 = false;
-
         if (field1 == "rating" && to_string(bucket.data[i].rating) == text1)
         {
             filteredBucket.add(bucket.data[i]);
@@ -157,100 +156,194 @@ int Array_Search::linearSearch(ReviewBucket& bucket, const string& field1, const
         }
     }
     
-    // Replace the original bucket with the filtered bucket if any matches were found
+    // Clean up original bucket
+    delete[] bucket.data;
+    
+    // If we found matches, use the filtered data
     if (count > 0)
     {
-        // Clean up original bucket
-        delete[] bucket.data;
-        
-        // Copy filtered data to original bucket
         bucket.size = filteredBucket.size;
         bucket.capacity = filteredBucket.capacity;
-        bucket.data = new Review[bucket.capacity];
-
-        for (int i = 0; i < bucket.size; i++)
-        {
-            bucket.data[i] = filteredBucket.data[i];
-        }
+        bucket.data = filteredBucket.data;
         
-        // Set filtered bucket's data to nullptr to prevent deletion when it goes out of scope
+        // Prevent filteredBucket from deleting the data when it goes out of scope
         filteredBucket.data = nullptr;
+        filteredBucket.size = 0;
+        filteredBucket.capacity = 0;
     }
     else
     {
-        // If no matches, empty the bucket
-        delete[] bucket.data;
-        bucket.data = new Review[bucket.capacity];
+        // If no matches, initialize empty bucket
         bucket.size = 0;
+        bucket.capacity = 10; // or some default capacity
+        bucket.data = new Review[bucket.capacity];
     }
-    return count;
+    
+   return count;
 }
 
 /* Binary Search Implementation - Array
-- Time Complexity: O(log n) [Best Case], O(n) [Average & Worst Case]
+- Time Complexity: O(log n) [Best Case], O(n) [Worst Case]
 - Space Complexity: O(1)
 */
 int Array_Search::binarySearch(TransactionBucket& bucket, const string& field1, const string& value1, const string& field2, const string& value2) 
 {
-    int count = 0;
-    
-    for (int i = 0; i < bucket.size; i++) 
+    if (bucket.size == 0)
     {
-        bool match1 = false;
+        return 0;
+    }
+
+    auto getFieldValue = [](const Transaction& transaction, const string& field) -> string 
+    {
+        if (field == "category") 
+        {
+            return transaction.category;
+        }
+        else if (field == "paymentMethod") 
+        {
+            return transaction.paymentMethod;
+        }
+        return "";
+    };
+
+    TransactionBucket filteredBucket;
+    filteredBucket.capacity = bucket.size;
+    filteredBucket.data = new Transaction[filteredBucket.capacity];
+    filteredBucket.size = 0;
+
+    int left = 0;
+    int right = bucket.size - 1;
+    int firstMatchIndex = -1;
+
+    while (left <= right) 
+    {
+        int mid = left + (right - left) / 2;
+        string currentValue = getFieldValue(bucket.data[mid], field1);
+
+        if (currentValue == value1) 
+        {
+            firstMatchIndex = mid;
+            right = mid - 1;  
+        } 
+        else if (currentValue < value1) 
+        {
+            left = mid + 1;
+        } 
+        else 
+        {
+            right = mid - 1;
+        }
+    }
+
+    if (firstMatchIndex == -1) 
+    {
+        delete[] bucket.data;
+        bucket.data = new Transaction[bucket.capacity];
+        bucket.size = 0;
+        return 0;
+    }
+
+    int i = firstMatchIndex;
+    while (i > 0 && getFieldValue(bucket.data[i-1], field1) == value1) 
+    {
+        i--;
+    }
+
+    while (i < bucket.size && getFieldValue(bucket.data[i], field1) == value1) 
+    {
         bool match2 = true;
-
-        if (field1 == "category")
+        if (!field2.empty()) 
         {
-            match1 = (bucket.data[i].category == value1);
-        }
-        else if (field1 == "paymentMethod")
-        {
-            match1 = (bucket.data[i].paymentMethod == value1);
+            match2 = (getFieldValue(bucket.data[i], field2) == value2);
         }
 
-        if (match1 && !field2.empty())
+        if (match2) 
         {
-            match2 = false;
-            if (field2 == "category")
-            {
-                match2 = (bucket.data[i].category == value2);
-            }
-            else if (field2 == "paymentMethod")
-            {
-                match2 = (bucket.data[i].paymentMethod == value2);
-            }
+            filteredBucket.data[filteredBucket.size++] = bucket.data[i];
         }
-
-        if (match1 && match2)
-        {
-            count++;
-        }
+        i++;
     }
+
+    int count = filteredBucket.size;
+    delete[] bucket.data;
+    bucket.data = filteredBucket.data;
+    bucket.size = count;
+    
     return count;
-}
-int Array_Search::binarySearch(ReviewBucket& bucket, const string& field1, const string& value1) 
+}   
+int Array_Search::binarySearch(ReviewBucket& bucket, const string& field1, const string& text1)
 {
-    int count = 0;
-    
-    for (int i = 0; i < bucket.size; i++) 
+    if (bucket.size == 0)
     {
-        bool match1 = false;
+        return 0;
+    }
 
-        if (field1 == "rating")
+    auto getFieldValue = [](const Review& review, const string& field) -> string {
+        if (field == "rating") 
         {
-            match1 = (to_string(bucket.data[i].rating) == value1);
+            return to_string(review.rating);
         }
-    
-        if (match1) 
+        return "";
+    };
+
+    ReviewBucket filteredBucket;
+    filteredBucket.capacity = bucket.size;
+    filteredBucket.data = new Review[filteredBucket.capacity];
+    filteredBucket.size = 0;
+
+    int left = 0;
+    int right = bucket.size - 1;
+    int firstMatchIndex = -1;
+
+    while (left <= right) 
+    {
+        int mid = left + (right - left) / 2;
+        string currentValue = getFieldValue(bucket.data[mid], field1);
+
+        if (currentValue == text1) 
         {
-            count++;
+            firstMatchIndex = mid;
+            right = mid - 1;  
+        } 
+        else if (currentValue < text1) 
+        {
+            left = mid + 1;
+        } 
+        else {
+            right = mid - 1;
         }
     }
+
+    if (firstMatchIndex == -1) 
+    {
+        delete[] bucket.data;
+        bucket.data = new Review[bucket.capacity];
+        bucket.size = 0;
+        return 0;
+    }
+
+    int i = firstMatchIndex;
+    while (i > 0 && getFieldValue(bucket.data[i-1], field1) == text1) 
+    {
+        i--;
+    }
+
+    while (i < bucket.size && getFieldValue(bucket.data[i], field1) == text1) 
+    {
+        filteredBucket.data[filteredBucket.size++] = bucket.data[i];
+        i++;
+    }
+
+    int count = filteredBucket.size;
+    delete[] bucket.data;
+    bucket.data = filteredBucket.data;
+    bucket.size = count;
+    
     return count;
 }
 
 /* Jump Search Implementation - Array
-- Time Complexity: O(sqrt(n)) [Best Case], O(n) [Average & Worst Case]
+- Time Complexity: O(sqrt(n)) [Best Case], O(n) [Worst Case]
 - Space Complexity: O(1)
 */
 int Array_Search::jumpSearch(TransactionBucket& bucket, const string& field1, const string& text1, const string& field2, const string& text2)

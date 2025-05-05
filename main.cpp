@@ -197,7 +197,8 @@ void displayLinkedListDataMenu(LinkedList& ll)
     loadLinkedList(ll);  // Ensure fresh data is loaded
     int choice = -1;
 
-    do {
+    do 
+    {
         cout << "\n====================== Linked List Display Menu ======================" << endl;
         cout << "1. Display Transactions" << endl;
         cout << "2. Display Reviews" << endl;
@@ -554,11 +555,13 @@ int main()
             Helper h;
                         
             int questionChoice = 0;
-            do {
+            do 
+            {
                 displayQuestionsMenu();
                 cin >> questionChoice;
                 
-                switch (questionChoice) {
+                switch (questionChoice) 
+                {
                     case 1: 
                     {  // Q1 - Sort
                         int sortChoice;
